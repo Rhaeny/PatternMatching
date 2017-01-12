@@ -37,7 +37,7 @@ namespace Testing
                 getStartProcessQuery,
                 getProcessStartInfoQuery,
                 registerLayoutPluginCommand) {GraphvizPath = @"C:\Program Files (x86)\Graphviz2.38\bin\"};
-            byte[] output = wrapper.GenerateGraph(nfa.GetString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
         }
     }

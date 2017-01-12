@@ -59,7 +59,7 @@ namespace AutomataLibrary
 			}
 		}
 
-	    public string GetString()
+	    public string GetGraphString()
 	    {
 	        StringBuilder output = new StringBuilder();
 	        output.Append("digraph{");
