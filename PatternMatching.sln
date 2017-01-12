@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomataLibrary", "AutomataLibrary\AutomataLibrary.csproj", "{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{2C27D069-49CF-406D-8D69-C40CE7D2FF02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C27D069-49CF-406D-8D69-C40CE7D2FF02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C27D069-49CF-406D-8D69-C40CE7D2FF02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C27D069-49CF-406D-8D69-C40CE7D2FF02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C27D069-49CF-406D-8D69-C40CE7D2FF02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
