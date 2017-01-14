@@ -43,6 +43,8 @@ namespace AutomataLibrary
                 output.Append(finalState + "[shape=doublecircle];");
             }
 
+            output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
+
             foreach (var state in MStates)
             {
                 SortedList<char, int> transitions;

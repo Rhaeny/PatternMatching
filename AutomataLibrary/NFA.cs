@@ -69,7 +69,9 @@ namespace AutomataLibrary
 	            output.Append(finalState + "[shape=doublecircle];");
 	        }
 
-	        foreach (var state in MStates)
+            output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
+
+            foreach (var state in MStates)
 	        {
                 SortedList <char, SortedSet <int>> transitions;
 	            if (MDelta.TryGetValue(state, out transitions))

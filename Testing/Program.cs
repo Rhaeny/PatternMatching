@@ -19,7 +19,7 @@ namespace Testing
             SortedSet<int> mFinalStates;
             List<Tuple<int, string, int>> deltaItems;
 
-            Console.WriteLine("1 - DNA\n2 - NFA");
+            Console.WriteLine("1 - NFA\n2 - DFA");
             var x = Console.ReadLine();
             switch (x)
             {
