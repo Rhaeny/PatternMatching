@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AutomataLibrary
 {
@@ -31,5 +32,31 @@ namespace AutomataLibrary
 				}
 			}
 		}
-	}
+
+        public override string GetGraphString()
+        {
+            StringBuilder output = new StringBuilder();
+            output.Append("digraph{");
+
+            foreach (var finalState in MFinalStates)
+            {
+                output.Append(finalState + "[shape=doublecircle];");
+            }
+
+            foreach (var state in MStates)
+            {
+                SortedList<char, int> transitions;
+                if (MDelta.TryGetValue(state, out transitions))
+                {
+                    foreach (var transition in transitions)
+                    {
+                        output.Append(state + " -> " + transition.Value + " [label=" + transition.Key + "];");
+                    }
+                }
+            }
+
+            output.Append("}");
+            return output.ToString();
+        }
+    }
 }
