@@ -37,14 +37,11 @@ namespace AutomataLibrary
         {
             StringBuilder output = new StringBuilder();
             output.Append("digraph{");
-
             foreach (var finalState in MFinalStates)
             {
                 output.Append(finalState + "[shape=doublecircle];");
             }
-
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
-
             foreach (var state in MStates)
             {
                 SortedList<char, int> transitions;
@@ -56,7 +53,6 @@ namespace AutomataLibrary
                     }
                 }
             }
-
             output.Append("}");
             return output.ToString();
         }

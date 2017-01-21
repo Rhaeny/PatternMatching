@@ -31,7 +31,6 @@ namespace AutomataLibrary
 							s = new SortedSet<int>() { item.Item3 };
 							destStates.Add(ch, s);
 						}
-
 					}
 				}
 				else
@@ -84,7 +83,6 @@ namespace AutomataLibrary
                         }
 	                }
 	            }
-
                 SortedSet<int> epsTrans;
 	            if (MEpsilonTrans.TryGetValue(state, out epsTrans))
 	            {
@@ -94,7 +92,6 @@ namespace AutomataLibrary
 	                }
 	            }
 	        }
-
             output.Append("}");
             return output.ToString();
 	    }
