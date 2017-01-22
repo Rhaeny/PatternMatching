@@ -128,6 +128,8 @@ namespace Testing
                 registerLayoutPluginCommand) {GraphvizPath = @"C:\Program Files (x86)\Graphviz2.38\bin\"};
             byte[] output = wrapper.GenerateGraph(fa.GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
+            Console.WriteLine(fa.GetGraphString());
+            Console.ReadLine();
         }
     }
 }

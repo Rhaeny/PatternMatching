@@ -62,36 +62,28 @@ namespace AutomataLibrary
 	    {
 	        StringBuilder output = new StringBuilder();
 	        output.Append("digraph{");
-
 	        foreach (var finalState in MFinalStates)
 	        {
 	            output.Append(finalState + "[shape=doublecircle];");
 	        }
-
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
-
-            foreach (var state in MStates)
-	        {
-                SortedList <char, SortedSet <int>> transitions;
-	            if (MDelta.TryGetValue(state, out transitions))
-	            {
-	                foreach (var transition in transitions)
-	                {
-	                    foreach (var item2 in transition.Value)
-	                    {
-                            output.Append(state + " -> " + item2 + " [label=" + transition.Key + "];");
-                        }
-	                }
-	            }
-                SortedSet<int> epsTrans;
-	            if (MEpsilonTrans.TryGetValue(state, out epsTrans))
-	            {
-	                foreach (var item2 in epsTrans)
-	                {
-                        output.Append(state + " -> " + item2 + " [label=E];");
-	                }
-	            }
-	        }
+            foreach (var delta in MDelta)
+            {
+                foreach (var transition in delta.Value)
+                {
+                    foreach (var value in transition.Value)
+                    {
+                        output.Append(delta.Key + " -> " + value + " [label=" + transition.Key + "];");
+                    }
+                }
+            }
+            foreach (var epsTrans in MEpsilonTrans)
+            {
+                foreach (var value in epsTrans.Value)
+                {
+                    output.Append(epsTrans.Key + " -> " + value + " [label=E];");
+                }
+            }
             output.Append("}");
             return output.ToString();
 	    }

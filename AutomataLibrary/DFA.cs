@@ -42,15 +42,11 @@ namespace AutomataLibrary
                 output.Append(finalState + "[shape=doublecircle];");
             }
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
-            foreach (var state in MStates)
+            foreach (var delta in MDelta)
             {
-                SortedList<char, int> transitions;
-                if (MDelta.TryGetValue(state, out transitions))
+                foreach (var transition in delta.Value)
                 {
-                    foreach (var transition in transitions)
-                    {
-                        output.Append(state + " -> " + transition.Value + " [label=" + transition.Key + "];");
-                    }
+                    output.Append(delta.Key + " -> " + transition.Value + " [label=" + transition.Key + "];");
                 }
             }
             output.Append("}");
