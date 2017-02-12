@@ -125,7 +125,7 @@ namespace Testing
             var wrapper = new GraphGeneration(
                 getStartProcessQuery,
                 getProcessStartInfoQuery,
-                registerLayoutPluginCommand) {GraphvizPath = @"C:\Program Files (x86)\Graphviz2.38\bin\"};
+                registerLayoutPluginCommand) {GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
             byte[] output = wrapper.GenerateGraph(fa.GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
             Console.WriteLine(fa.GetGraphString());
