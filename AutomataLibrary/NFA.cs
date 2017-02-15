@@ -81,7 +81,7 @@ namespace AutomataLibrary
             {
                 foreach (var value in epsTrans.Value)
                 {
-                    output.Append(epsTrans.Key + " -> " + value + " [label=E];");
+                    output.Append(epsTrans.Key + " -> " + value + " [label=Eps];");
                 }
             }
             output.Append("}");

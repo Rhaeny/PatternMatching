@@ -6,7 +6,7 @@ using AutomataLibrary;
 
 namespace AutomataGeneratorLibrary
 {
-    public class HammingDistanceAutomataGenerator
+    public class LevenshteinDistanceAutomataGenerator
     {
         protected NFA NFA;
         protected int M;
@@ -18,7 +18,7 @@ namespace AutomataGeneratorLibrary
         protected List<Tuple<int, string, int>> DeltaItems;
         protected List<Tuple<int, int>> EpsilonItems;
 
-        public HammingDistanceAutomataGenerator(string pattern, int k)
+        public LevenshteinDistanceAutomataGenerator(string pattern, int k)
         {
             M = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
@@ -28,17 +28,15 @@ namespace AutomataGeneratorLibrary
             EpsilonItems = new List<Tuple<int, int>>();
             MFinalStates = new SortedSet<int>();
 
-            int l = 0;
-            int r = 0;
+            int l = k;
+            int r = pattern.Length;
 
-            for (int i = 0; i < M; i++)
+            for (int i = M - 1; i >= 0; i--)
             {
                 MStates.Add(i);
-                if (r >= pattern.Length)
+                if (r == pattern.Length)
                 {
                     MFinalStates.Add(i);
-                    l = l + 1;
-                    r = l;
                 }
                 else
                 {
@@ -57,12 +55,28 @@ namespace AutomataGeneratorLibrary
                                 }
                             }
                         }
+                        if (r > l)
+                        {
+                            foreach (var c in MAlphabet)
+                            {
+                                if (c != pattern[r])
+                                {
+                                    DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), s - 1));
+                                }
+                            }
+                        }
+                        EpsilonItems.Add(new Tuple<int, int>(i, s));
                     }
                     else
                     {
                         DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
                     }
-                    r = r + 1;
+                }
+                r = r - 1;
+                if (r < l)
+                {
+                    r = pattern.Length;
+                    l = l - 1;
                 }
             }
             MInitialState = 0;
