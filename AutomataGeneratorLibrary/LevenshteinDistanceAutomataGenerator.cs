@@ -1,32 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using AutomataLibrary;
 
 namespace AutomataGeneratorLibrary
 {
-    public class LevenshteinDistanceAutomataGenerator
+    public class LevenshteinDistanceAutomataGenerator : AbstractAutomataGenerator
     {
-        protected NFA NFA;
         protected int M;
 
-        protected SortedSet<char> MAlphabet;
-        protected SortedSet<int> MStates;
-        protected int MInitialState;
-        protected SortedSet<int> MFinalStates;
-        protected List<Tuple<int, string, int>> DeltaItems;
-        protected List<Tuple<int, int>> EpsilonItems;
-
-        public LevenshteinDistanceAutomataGenerator(string pattern, int k)
+        public LevenshteinDistanceAutomataGenerator(string pattern, int k) : base(pattern)
         {
             M = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
-
-            MAlphabet = new SortedSet<char>(pattern.Distinct());
-            MStates = new SortedSet<int>();
-            DeltaItems = new List<Tuple<int, string, int>>();
-            EpsilonItems = new List<Tuple<int, int>>();
-            MFinalStates = new SortedSet<int>();
 
             int l = k;
             int r = pattern.Length;
@@ -81,11 +64,6 @@ namespace AutomataGeneratorLibrary
             }
             MInitialState = 0;
             NFA = new NFA(MAlphabet, MStates, DeltaItems, EpsilonItems, MInitialState, MFinalStates);
-        }
-
-        public NFA GetAutomata()
-        {
-            return NFA;
         }
     }
 }
