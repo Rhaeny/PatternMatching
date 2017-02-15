@@ -17,7 +17,7 @@ namespace AutomataGeneratorLibrary
         protected int MInitialState;
         protected SortedSet<int> MFinalStates;
         protected List<Tuple<int, string, int>> DeltaItems;
-        protected List<Tuple<int, int>> EpsilonItems = new List<Tuple<int, int>>();
+        protected List<Tuple<int, int>> EpsilonItems;
 
         public HammingDistanceAutomataGenerator(string pattern, int k)
         {
@@ -38,21 +38,26 @@ namespace AutomataGeneratorLibrary
             MFinalStates = new SortedSet<int>();
             int l = 0;
             int r = 0;
-            for (int i = 0; i < pattern.Length; i++)
+            for (int i = 0; i < M; i++)
             {
-                if (r > pattern.Length)
+                if (r >= pattern.Length)
                 {
                     MFinalStates.Add(i);
                     l = l + 1;
-                    r = l + 1;
+                    r = l;
                 }
                 else
                 {
-                    DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i+1));
                     if (l < k)
                     {
                         int s = i + pattern.Length + 1 - l;
+                        DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
+                        //DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), s));
                         EpsilonItems.Add(new Tuple<int, int>(i, s));
+                    }
+                    else
+                    {
+                        DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
                     }
                     r = r + 1;
                 }

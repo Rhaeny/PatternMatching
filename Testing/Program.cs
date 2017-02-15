@@ -119,7 +119,7 @@ namespace Testing
                 }
             }*/
 
-            HammingDistanceAutomataGenerator hdag = new HammingDistanceAutomataGenerator("ab", 1);
+            HammingDistanceAutomataGenerator hdag = new HammingDistanceAutomataGenerator("richardzavadil", 10);
             
             var getStartProcessQuery = new GetStartProcessQuery();
             var getProcessStartInfoQuery = new GetProcessStartInfoQuery();
