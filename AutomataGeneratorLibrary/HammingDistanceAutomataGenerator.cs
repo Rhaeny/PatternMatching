@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using AutomataLibrary;
 
 namespace AutomataGeneratorLibrary
 {
     public class HammingDistanceAutomataGenerator
     {
-        public NFA NFA;
+        protected NFA NFA;
         protected int M;
 
         protected SortedSet<char> MAlphabet;
@@ -24,22 +22,17 @@ namespace AutomataGeneratorLibrary
             M = (int)Math.Round((k + 1)*(pattern.Length + 1 - (double)k/2), MidpointRounding.AwayFromZero);
 
             MAlphabet = new SortedSet<char>(pattern.Distinct());
-
             MStates = new SortedSet<int>();
-            for (int i = 0; i < M; i++)
-            {
-                MStates.Add(i);
-            }
-
-            MInitialState = MStates.ElementAt(0);
-
             DeltaItems = new List<Tuple<int, string, int>>();
             EpsilonItems = new List<Tuple<int, int>>();
             MFinalStates = new SortedSet<int>();
+
             int l = 0;
             int r = 0;
+
             for (int i = 0; i < M; i++)
             {
+                MStates.Add(i);
                 if (r >= pattern.Length)
                 {
                     MFinalStates.Add(i);
@@ -52,7 +45,6 @@ namespace AutomataGeneratorLibrary
                     {
                         int s = i + pattern.Length + 1 - l;
                         DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
-                        //DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), s));
                         EpsilonItems.Add(new Tuple<int, int>(i, s));
                     }
                     else
@@ -62,8 +54,14 @@ namespace AutomataGeneratorLibrary
                     r = r + 1;
                 }
             }
+            MInitialState = MStates.ElementAt(0);
             EpsilonItems.Add(new Tuple<int, int>(0, 0));
             NFA = new NFA(MAlphabet, MStates, DeltaItems, EpsilonItems, MInitialState, MFinalStates);
+        }
+
+        public NFA GetAutomata()
+        {
+            return NFA;
         }
     }
 }

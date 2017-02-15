@@ -119,7 +119,7 @@ namespace Testing
                 }
             }*/
 
-            HammingDistanceAutomataGenerator hdag = new HammingDistanceAutomataGenerator("richardzavadil", 10);
+            HammingDistanceAutomataGenerator hdag = new HammingDistanceAutomataGenerator("dusancholeva", 4);
             
             var getStartProcessQuery = new GetStartProcessQuery();
             var getProcessStartInfoQuery = new GetProcessStartInfoQuery();
@@ -130,11 +130,9 @@ namespace Testing
                 getProcessStartInfoQuery,
                 registerLayoutPluginCommand)
             { GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
-            byte[] output = wrapper.GenerateGraph(hdag.NFA.GetGraphString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(hdag.GetAutomata().GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
-            Console.WriteLine(hdag.NFA.GetGraphString());
-            Console.ReadLine();
-
+            Console.WriteLine(hdag.GetAutomata().GetGraphString());
             Console.ReadLine();
         }
     }
