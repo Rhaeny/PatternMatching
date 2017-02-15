@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutomataGeneratorLibrary;
 using AutomataLibrary;
 using GraphVizWrapper;
 using GraphVizWrapper.Commands;
@@ -11,7 +12,7 @@ namespace Testing
     {
         static void Main(string[] args)
         {
-            AbstractFiniteAutomaton fa;
+            /*AbstractFiniteAutomaton fa;
 
             SortedSet<char> mAlphabet;
             SortedSet<int> mStates;
@@ -116,8 +117,10 @@ namespace Testing
                     fa = new DFA(mAlphabet, mStates, deltaItems, mInitialState, mFinalStates);
                     break;
                 }
-            }
+            }*/
 
+            HammingDistanceAutomataGenerator hdag = new HammingDistanceAutomataGenerator("ab", 1);
+            
             var getStartProcessQuery = new GetStartProcessQuery();
             var getProcessStartInfoQuery = new GetProcessStartInfoQuery();
             var registerLayoutPluginCommand = new RegisterLayoutPluginCommand(getProcessStartInfoQuery, getStartProcessQuery);
@@ -125,10 +128,13 @@ namespace Testing
             var wrapper = new GraphGeneration(
                 getStartProcessQuery,
                 getProcessStartInfoQuery,
-                registerLayoutPluginCommand) {GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
-            byte[] output = wrapper.GenerateGraph(fa.GetGraphString(), Enums.GraphReturnType.Png);
+                registerLayoutPluginCommand)
+            { GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
+            byte[] output = wrapper.GenerateGraph(hdag.NFA.GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
-            Console.WriteLine(fa.GetGraphString());
+            Console.WriteLine(hdag.NFA.GetGraphString());
+            Console.ReadLine();
+
             Console.ReadLine();
         }
     }
