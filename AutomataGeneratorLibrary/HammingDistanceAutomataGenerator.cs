@@ -31,13 +31,10 @@ namespace AutomataGeneratorLibrary
                         DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
                         foreach (var c in MAlphabet)
                         {
-                            if (c != pattern[r])
+                            DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), s));
+                            if (i == 0)
                             {
-                                DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), s));
-                                if (i == 0)
-                                {
-                                    DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), i));
-                                }
+                                DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), i));
                             }
                         }
                     }
