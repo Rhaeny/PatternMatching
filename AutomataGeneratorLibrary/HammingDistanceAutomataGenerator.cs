@@ -5,16 +5,16 @@ namespace AutomataGeneratorLibrary
 {
     public class HammingDistanceAutomataGenerator : AbstractAutomataGenerator
     {
-        protected int M;
+        protected int Qsize;
 
         public HammingDistanceAutomataGenerator(string pattern, int k) : base(pattern)
         {
-            M = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
+            Qsize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
             int l = 0;
             int r = 0;
 
-            for (int i = 0; i < M; i++)
+            for (int i = 0; i < Qsize; i++)
             {
                 MStates.Add(i);
                 if (r >= pattern.Length)

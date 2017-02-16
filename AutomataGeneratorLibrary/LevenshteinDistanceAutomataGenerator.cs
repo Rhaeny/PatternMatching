@@ -5,16 +5,16 @@ namespace AutomataGeneratorLibrary
 {
     public class LevenshteinDistanceAutomataGenerator : AbstractAutomataGenerator
     {
-        protected int M;
+        protected int Qsize;
 
         public LevenshteinDistanceAutomataGenerator(string pattern, int k) : base(pattern)
         {
-            M = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
+            Qsize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
             int l = k;
             int r = pattern.Length;
 
-            for (int i = M - 1; i >= 0; i--)
+            for (int i = Qsize - 1; i >= 0; i--)
             {
                 MStates.Add(i);
                 if (r == pattern.Length)

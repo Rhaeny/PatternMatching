@@ -33,6 +33,11 @@ namespace Testing
                         break;
             }
 
+            TimeSpan ts = stopWatch.Elapsed;
+            string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+            Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
+            stopWatch.Restart();
+
             var getStartProcessQuery = new GetStartProcessQuery();
             var getProcessStartInfoQuery = new GetProcessStartInfoQuery();
             var registerLayoutPluginCommand = new RegisterLayoutPluginCommand(getProcessStartInfoQuery, getStartProcessQuery);
@@ -46,9 +51,9 @@ namespace Testing
             System.IO.File.WriteAllBytes("Graph.png", output);
             Console.WriteLine(aag.GetAutomata().GetGraphString());
 
-            TimeSpan ts = stopWatch.Elapsed;
-            string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds/10:00}";
-            Console.WriteLine("RunTime " + elapsedTime);
+            ts = stopWatch.Elapsed;
+            elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+            Console.WriteLine("PNG image generated. Runtime: " + elapsedTime);
         }
     }
 }
