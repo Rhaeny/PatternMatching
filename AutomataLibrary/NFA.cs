@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AutomataLibrary
@@ -57,6 +58,79 @@ namespace AutomataLibrary
 				}
 			}
 		}
+
+	    /*public DFA TransformToDFA()
+	    {
+            SortedSet<int> initialStateSet = new SortedSet<int>();
+            GetEpsilonClosure(initialStateSet, MInitialState);
+
+            List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
+
+            List<SortedSet<int>> finalStates = new List<SortedSet<int>>();
+
+            List<SortedSet<int>> states = new List<SortedSet<int>>();
+
+            List<SortedSet<int>> s = new List<SortedSet<int>> {initialStateSet};
+            
+	        foreach (var sStates in s.ToList())
+	        {
+                foreach (var a in MAlphabet)
+                {
+                    foreach (var state in sStates)
+	                {
+	                    SortedList<char, SortedSet<int>> destItems1;
+	                    if (MDelta.TryGetValue(state, out destItems1))
+	                    {
+	                        SortedSet<int> destItems2;
+	                        if (destItems1.TryGetValue(a, out destItems2))
+	                        {
+	                            foreach (var destItem in destItems2)
+	                            {
+	                                SortedSet<int> closureItems = new SortedSet<int>();
+	                                GetEpsilonClosure(closureItems, destItem);
+	                                if (!closureItems.All(item => states.Any(stateItem => stateItem.Contains(item)))
+                                        && !s.Contains(closureItems))
+	                                {
+	                                    s.Add(closureItems);
+	                                    foreach (var x in closureItems)
+	                                    {
+	                                        Console.WriteLine("   " + x);
+	                                    }
+	                                }
+                                    Console.WriteLine(state + " " + a);
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	            if (sStates.Any(state => MFinalStates.Contains(state)))
+	            {
+	                finalStates.Add(sStates);
+	            }
+	        }
+	        foreach (var state in s)
+	        {
+	            foreach (var x in state)
+	            {
+	                Console.WriteLine(state);
+	            }
+                Console.WriteLine("-");
+	        }
+	        DFA dfa = new DFA(MAlphabet, new SortedSet<int>(), deltaItems, 0, new SortedSet<int>());
+	        return dfa;
+	    }*/
+
+	    protected void GetEpsilonClosure(SortedSet<int> epsilonClosure, int state)
+	    {
+            epsilonClosure.Add(state);
+            foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == state))
+	        {
+                foreach (var value in epsTrans.Value)
+	            {
+	                GetEpsilonClosure(epsilonClosure, value);
+	            }
+	        }
+	    }
 
 	    public override string GetGraphString()
 	    {

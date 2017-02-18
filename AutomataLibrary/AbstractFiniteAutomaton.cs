@@ -17,6 +17,11 @@ namespace AutomataLibrary
 			MFinalStates = finalStates;
 		}
 
+        protected AbstractFiniteAutomaton()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public abstract string GetGraphString();
     }
 }
