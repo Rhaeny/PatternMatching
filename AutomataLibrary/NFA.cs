@@ -59,66 +59,107 @@ namespace AutomataLibrary
 			}
 		}
 
-	    /*public DFA TransformToDFA()
+        public DFA TransformToDFA()
 	    {
-            SortedSet<int> initialStateSet = new SortedSet<int>();
-            GetEpsilonClosure(initialStateSet, MInitialState);
+	        SortedSet<int> initialStateSet = new SortedSet<int>();
+	        GetEpsilonClosure(initialStateSet, MInitialState);
 
-            List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
-
+            List<Tuple<SortedSet<int>, string, SortedSet<int>>> deltaItems = new List<Tuple<SortedSet<int>, string, SortedSet<int>>>();
             List<SortedSet<int>> finalStates = new List<SortedSet<int>>();
-
             List<SortedSet<int>> states = new List<SortedSet<int>>();
+            List<SortedSet<int>> s = new List<SortedSet<int>> { initialStateSet };
 
-            List<SortedSet<int>> s = new List<SortedSet<int>> {initialStateSet};
-            
-	        foreach (var sStates in s.ToList())
+            ProcessState(s, initialStateSet, deltaItems, finalStates);
+
+            foreach (var set in s)
+            {
+                PrintSortedSet(set);
+            }
+
+            return new DFA(MAlphabet, new SortedSet<int>(), new List<Tuple<int, string, int>>(), 0, new SortedSet<int>());
+	    }
+
+	    protected void ProcessState(List<SortedSet<int>> s, SortedSet<int> currentStateSet,
+            List<Tuple<SortedSet<int>, string, SortedSet<int>>> deltaItems, List<SortedSet<int>> finalStates)
+	    {
+	        foreach (var a in MAlphabet)
 	        {
-                foreach (var a in MAlphabet)
-                {
-                    foreach (var state in sStates)
+	            foreach (var state1 in currentStateSet)
+	            {
+	                SortedSet<int> states1EpsClosure = new SortedSet<int>();
+	                GetEpsilonClosure(states1EpsClosure, state1);
+
+	                SortedSet<int> states2Sum = new SortedSet<int>();
+	                foreach (var state1EpsCLosure in states1EpsClosure)
 	                {
-	                    SortedList<char, SortedSet<int>> destItems1;
-	                    if (MDelta.TryGetValue(state, out destItems1))
+	                    SortedSet<int> states2;
+	                    if (GetStates2(state1EpsCLosure, a, out states2))
 	                    {
-	                        SortedSet<int> destItems2;
-	                        if (destItems1.TryGetValue(a, out destItems2))
-	                        {
-	                            foreach (var destItem in destItems2)
-	                            {
-	                                SortedSet<int> closureItems = new SortedSet<int>();
-	                                GetEpsilonClosure(closureItems, destItem);
-	                                if (!closureItems.All(item => states.Any(stateItem => stateItem.Contains(item)))
-                                        && !s.Contains(closureItems))
-	                                {
-	                                    s.Add(closureItems);
-	                                    foreach (var x in closureItems)
-	                                    {
-	                                        Console.WriteLine("   " + x);
-	                                    }
-	                                }
-                                    Console.WriteLine(state + " " + a);
-	                            }
-	                        }
+                            states2Sum.UnionWith(states2);
 	                    }
 	                }
-	            }
-	            if (sStates.Any(state => MFinalStates.Contains(state)))
-	            {
-	                finalStates.Add(sStates);
-	            }
+
+                    if (!s.Any(set => set.SetEquals(currentStateSet)))
+                    {
+                        s.Add(currentStateSet);
+                        PrintSortedSet(states2Sum);
+                        ProcessState(s, states2Sum, deltaItems, finalStates);
+                    }
+
+                    /*SortedSet<int> states2;
+	                if (GetStates2(state1, a, out states2))
+	                {
+                        foreach (var state2 in states2)
+	                    {
+                            Console.WriteLine(state1 + " " + a + " " + state2);
+	                        if (!s.Any(set => set.SetEquals(currentStateSet)))
+	                        {
+                                s.Add(currentStateSet);
+
+                                SortedSet<int> state2Set = new SortedSet<int>();
+                                GetEpsilonClosure(state2Set, state2);
+                                ProcessState(s, state2Set, deltaItems, finalStates);
+                            }
+                        }
+                        Console.WriteLine(a);
+                        PrintSortedSet(states2);
+                        if (!s.Any(set => set.SetEquals(currentStateSet)))
+                        {
+                            s.Add(currentStateSet);
+                            ProcessState(s, GetEpsilonClosureOfSet(states2), deltaItems, finalStates);
+                        }
+
+                    }*/
+                }
 	        }
-	        foreach (var state in s)
+	    }
+
+	    protected bool GetStates2(int state1, char a, out SortedSet<int> states2)
+	    {
+            SortedList<char, SortedSet<int>> destStates;
+            if (MDelta.TryGetValue(state1, out destStates))
+            {
+                if (destStates.TryGetValue(a, out states2))
+                {
+                    return true;
+                }
+            }
+	        states2 = null;
+	        return false;
+	    }
+
+	    protected SortedSet<int> GetEpsilonClosureOfSet(SortedSet<int> set)
+	    {
+	        SortedSet<int> epsilonClosureOfSet = new SortedSet<int>();
+	        foreach (var state in set)
 	        {
-	            foreach (var x in state)
-	            {
-	                Console.WriteLine(state);
-	            }
-                Console.WriteLine("-");
+	            SortedSet<int> epsilonClosure = new SortedSet<int>();
+                GetEpsilonClosure(epsilonClosure, state);
+                epsilonClosureOfSet.UnionWith(epsilonClosure);
 	        }
-	        DFA dfa = new DFA(MAlphabet, new SortedSet<int>(), deltaItems, 0, new SortedSet<int>());
-	        return dfa;
-	    }*/
+            PrintSortedSet(epsilonClosureOfSet);
+            return epsilonClosureOfSet;
+	    }
 
 	    protected void GetEpsilonClosure(SortedSet<int> epsilonClosure, int state)
 	    {
@@ -132,9 +173,22 @@ namespace AutomataLibrary
 	        }
 	    }
 
+	    public void PrintSortedSet(SortedSet<int> sortedSet)
+	    {
+            Console.WriteLine();
+            Console.Write("{ ");
+            foreach (var closureState in sortedSet)
+            {
+                Console.Write(closureState + " ");
+            }
+            Console.Write("}");
+            Console.WriteLine();
+        }
+
 	    public override string GetGraphString()
 	    {
 	        StringBuilder output = new StringBuilder();
+	        List<Tuple<int, SortedSet<char>, int>> outputDelta = (from state1 in MStates from state2 in MStates select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
 	        output.Append("digraph{");
 	        foreach (var finalState in MFinalStates)
 	        {
@@ -147,10 +201,27 @@ namespace AutomataLibrary
                 {
                     foreach (var value in transition.Value)
                     {
-                        output.Append(delta.Key + " -> " + value + " [label=" + transition.Key + "];");
+                        foreach (var outputTrans in outputDelta.Where(outputTrans => outputTrans.Item1 == delta.Key && outputTrans.Item3 == value))
+                        {
+                            outputTrans.Item2.Add(transition.Key);
+                        }
                     }
                 }
             }
+	        foreach (var transition in outputDelta)
+	        {
+	            if (transition.Item2.SetEquals(MAlphabet))
+	            {
+                    output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=Sig];");
+                }
+	            else
+	            {
+                    foreach (var symbol in transition.Item2)
+                    {
+                        output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=" + symbol + "];");
+                    }
+                }
+	        }
             foreach (var epsTrans in MEpsilonTrans)
             {
                 foreach (var value in epsTrans.Value)

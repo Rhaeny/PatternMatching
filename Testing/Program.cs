@@ -49,7 +49,7 @@ namespace Testing
             { GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
             byte[] output = wrapper.GenerateGraph(aag.GetAutomata().GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
-            Console.WriteLine(aag.GetAutomata().GetGraphString());
+            Console.WriteLine(aag.GetAutomata().TransformToDFA().GetGraphString());
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
