@@ -44,7 +44,7 @@ namespace AutomataLibrary
 					MDelta.Add(item.Item1, destStates);
 				}
 			}
-			foreach(Tuple<int, int> item in epsilonItems)
+			foreach(var item in epsilonItems)
 			{
 				SortedSet<int> s;
 				if (MEpsilonTrans.TryGetValue(item.Item1, out s))
@@ -110,13 +110,20 @@ namespace AutomataLibrary
                     mFinalStates.Add(i);
                 }
             }
-
+            Console.WriteLine("--------------");
+            foreach (var set in processedStateSets)
+            {
+                PrintSortedSet(set);
+            }
+            Console.WriteLine("xxxxxxxxxxxxxxxxxx");
             foreach (var transition in mDeltaSet)
             {
                 int item1 = processedStateSets.FindIndex(set => set == transition.Item1);
                 foreach (var destItems in transition.Item2)
                 {
-                    int item2 = processedStateSets.FindIndex(set => set == destItems.Value);
+                    PrintSortedSet(destItems.Value);
+                    int item2 = processedStateSets.FindIndex(set => set.SetEquals(destItems.Value));
+                    Console.WriteLine(item2);
                     mDelta.Add(new Tuple<int, string, int>(item1, destItems.Key.ToString(), item2));
                 }
             }
