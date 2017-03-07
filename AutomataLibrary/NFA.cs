@@ -57,12 +57,15 @@ namespace AutomataLibrary
 					MEpsilonTrans.Add(item.Item1, s);
 				}
 			}
+            DeleteEpsilonTransitions();
 		}
 
-        public DFA TransformToDFA()
+        /*public DFA TransformToDFA()
 	    {
 	        SortedSet<int> initialStateSet = new SortedSet<int>();
 	        GetEpsilonClosure(initialStateSet, MInitialState);
+
+            DeleteEpsilonTransitions();
 
             List<Tuple<SortedSet<int>, string, SortedSet<int>>> deltaItems = new List<Tuple<SortedSet<int>, string, SortedSet<int>>>();
             List<SortedSet<int>> finalStates = new List<SortedSet<int>>();
@@ -77,91 +80,51 @@ namespace AutomataLibrary
             }
 
             return new DFA(MAlphabet, new SortedSet<int>(), new List<Tuple<int, string, int>>(), 0, new SortedSet<int>());
-	    }
+	    }*/
 
-	    protected void ProcessState(List<SortedSet<int>> s, SortedSet<int> currentStateSet,
-            List<Tuple<SortedSet<int>, string, SortedSet<int>>> deltaItems, List<SortedSet<int>> finalStates)
+	    protected void DeleteEpsilonTransitions()
 	    {
-	        foreach (var a in MAlphabet)
+            SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
+            foreach (var state in MStates)
 	        {
-	            foreach (var state1 in currentStateSet)
+                SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
+                SortedSet<int> epsilonClosure = new SortedSet<int>();
+                GetEpsilonClosure(epsilonClosure, state);
+	            foreach (var a in MAlphabet)
 	            {
-	                SortedSet<int> states1EpsClosure = new SortedSet<int>();
-	                GetEpsilonClosure(states1EpsClosure, state1);
-
-	                SortedSet<int> states2Sum = new SortedSet<int>();
-	                foreach (var state1EpsCLosure in states1EpsClosure)
-	                {
-	                    SortedSet<int> states2;
-	                    if (GetStates2(state1EpsCLosure, a, out states2))
-	                    {
-                            states2Sum.UnionWith(states2);
-	                    }
-	                }
-
-                    if (!s.Any(set => set.SetEquals(currentStateSet)))
+                    SortedSet<int> items2Sum = new SortedSet<int>();
+                    foreach (var epsilonClosureState in epsilonClosure)
                     {
-                        s.Add(currentStateSet);
-                        PrintSortedSet(states2Sum);
-                        ProcessState(s, states2Sum, deltaItems, finalStates);
-                    }
-
-                    /*SortedSet<int> states2;
-	                if (GetStates2(state1, a, out states2))
-	                {
-                        foreach (var state2 in states2)
-	                    {
-                            Console.WriteLine(state1 + " " + a + " " + state2);
-	                        if (!s.Any(set => set.SetEquals(currentStateSet)))
-	                        {
-                                s.Add(currentStateSet);
-
-                                SortedSet<int> state2Set = new SortedSet<int>();
-                                GetEpsilonClosure(state2Set, state2);
-                                ProcessState(s, state2Set, deltaItems, finalStates);
+                            SortedSet<int> items2;
+                            if (GetItems2(epsilonClosureState, a, out items2))
+                            {
+                                items2Sum.UnionWith(items2);
                             }
-                        }
-                        Console.WriteLine(a);
-                        PrintSortedSet(states2);
-                        if (!s.Any(set => set.SetEquals(currentStateSet)))
-                        {
-                            s.Add(currentStateSet);
-                            ProcessState(s, GetEpsilonClosureOfSet(states2), deltaItems, finalStates);
-                        }
-
-                    }*/
+                    }
+                    destStates.Add(a, items2Sum);
                 }
-	        }
+                newDelta.Add(state, destStates);
+            }
+	        MDelta.Clear();
+	        MDelta = newDelta;
+            MEpsilonTrans.Clear();
 	    }
 
-	    protected bool GetStates2(int state1, char a, out SortedSet<int> states2)
+        protected bool GetItems2(int state1, char a, out SortedSet<int> items2)
 	    {
-            SortedList<char, SortedSet<int>> destStates;
-            if (MDelta.TryGetValue(state1, out destStates))
+            SortedList<char, SortedSet<int>> transitions;
+            if (MDelta.TryGetValue(state1, out transitions))
             {
-                if (destStates.TryGetValue(a, out states2))
+                if (transitions.TryGetValue(a, out items2))
                 {
                     return true;
                 }
             }
-	        states2 = null;
+            items2 = null;
 	        return false;
 	    }
 
-	    protected SortedSet<int> GetEpsilonClosureOfSet(SortedSet<int> set)
-	    {
-	        SortedSet<int> epsilonClosureOfSet = new SortedSet<int>();
-	        foreach (var state in set)
-	        {
-	            SortedSet<int> epsilonClosure = new SortedSet<int>();
-                GetEpsilonClosure(epsilonClosure, state);
-                epsilonClosureOfSet.UnionWith(epsilonClosure);
-	        }
-            PrintSortedSet(epsilonClosureOfSet);
-            return epsilonClosureOfSet;
-	    }
-
-	    protected void GetEpsilonClosure(SortedSet<int> epsilonClosure, int state)
+        protected void GetEpsilonClosure(SortedSet<int> epsilonClosure, int state)
 	    {
             epsilonClosure.Add(state);
             foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == state))
