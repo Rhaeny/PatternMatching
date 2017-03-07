@@ -47,10 +47,10 @@ namespace Testing
                 getProcessStartInfoQuery,
                 registerLayoutPluginCommand)
             { GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
-            byte[] output = wrapper.GenerateGraph(aag.GetAutomata().GetGraphString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(aag.GetAutomata().TransformToDFA().GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
-            Console.WriteLine(aag.GetAutomata().GetGraphString());
-
+            //Console.WriteLine(aag.GetAutomata().TransformToDFA().GetGraphString());
+            //aag.GetAutomata().TransformToDFA();
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image generated. Runtime: " + elapsedTime);

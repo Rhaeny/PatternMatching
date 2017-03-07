@@ -11,12 +11,12 @@ namespace AutomataLibrary
 		public DFA(SortedSet<char> alphabet, SortedSet<int> states, List<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
 			: base(alphabet, states, initialState, finalStates)
 		{
-			foreach(Tuple<int, string, int> item in deltaItems)
+			foreach(var item in deltaItems)
 			{
 				SortedList<char, int> destStates;
 				if (MDelta.TryGetValue(item.Item1, out destStates))
 				{
-					foreach (char ch in item.Item2)
+					foreach (var ch in item.Item2)
 					{
 						destStates.Add(ch, item.Item3);
 					}
@@ -24,7 +24,7 @@ namespace AutomataLibrary
 				else
 				{
 					destStates = new SortedList<char, int>();
-					foreach(char ch in item.Item2)
+					foreach(var ch in item.Item2)
 					{
 						destStates.Add(ch, item.Item3);
 					}
@@ -42,6 +42,10 @@ namespace AutomataLibrary
                 output.Append(finalState + "[shape=doublecircle];");
             }
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
+            foreach (var state in MStates)
+            {
+                output.Append(state + ";");
+            }
             foreach (var delta in MDelta)
             {
                 foreach (var transition in delta.Value)
