@@ -11,11 +11,11 @@ namespace AutomataLibrary
 		protected SortedList<int, SortedSet<int>> MEpsilonTrans = new SortedList<int, SortedSet<int>>();
 
 		public NFA(SortedSet<char> alphabet, SortedSet<int> states, 
-			List<Tuple<int, string, int>> deltaItems, List<Tuple<int, int>> epsilonItems,
+			IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
 			int initialState, SortedSet<int> finalStates)
 			: base (alphabet, states, initialState, finalStates)
 		{
-			foreach (var item in deltaItems)
+            foreach (var item in deltaItems)
 			{
 				SortedList<char, SortedSet<int>> destStates;
 				if (MDelta.TryGetValue(item.Item1, out destStates))
@@ -93,8 +93,6 @@ namespace AutomataLibrary
                     if (!s.Any(set => set.SetEquals(nextStates)) && !processedStateSets.Any(set => set.SetEquals(nextStates)))
                     {
                         s.Add(nextStates);
-                        Console.Write(a);
-                        PrintSortedSet(nextStates);
                     }
                     destItems.Add(a, nextStates);
                 }
@@ -110,20 +108,12 @@ namespace AutomataLibrary
                     mFinalStates.Add(i);
                 }
             }
-            Console.WriteLine("--------------");
-            foreach (var set in processedStateSets)
-            {
-                PrintSortedSet(set);
-            }
-            Console.WriteLine("xxxxxxxxxxxxxxxxxx");
             foreach (var transition in mDeltaSet)
             {
-                int item1 = processedStateSets.FindIndex(set => set == transition.Item1);
+                int item1 = processedStateSets.FindIndex(set => set.SetEquals(transition.Item1));
                 foreach (var destItems in transition.Item2)
                 {
-                    PrintSortedSet(destItems.Value);
                     int item2 = processedStateSets.FindIndex(set => set.SetEquals(destItems.Value));
-                    Console.WriteLine(item2);
                     mDelta.Add(new Tuple<int, string, int>(item1, destItems.Key.ToString(), item2));
                 }
             }

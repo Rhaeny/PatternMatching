@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using AutomataGeneratorLibrary;
+using AutomataLibrary;
 using GraphVizWrapper;
 using GraphVizWrapper.Commands;
 using GraphVizWrapper.Queries;
@@ -32,7 +33,7 @@ namespace Testing
                         aag = new LevenshteinDistanceAutomataGenerator(pattern, k);
                         break;
             }
-
+            DFA dfa = aag.GetAutomata().TransformToDFA();
             TimeSpan ts = stopWatch.Elapsed;
             string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
@@ -47,13 +48,15 @@ namespace Testing
                 getProcessStartInfoQuery,
                 registerLayoutPluginCommand)
             { GraphvizPath = @"..\..\..\packages\Graphviz.2.38.0.2\" };
-            byte[] output = wrapper.GenerateGraph(aag.GetAutomata().TransformToDFA().GetGraphString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
             System.IO.File.WriteAllBytes("Graph.png", output);
-            //Console.WriteLine(aag.GetAutomata().TransformToDFA().GetGraphString());
-            //aag.GetAutomata().TransformToDFA();
+            
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image generated. Runtime: " + elapsedTime);
+
+            Console.WriteLine("Zadejte vstup pro DFA:");
+            dfa.Accepts(Console.ReadLine());
         }
     }
 }

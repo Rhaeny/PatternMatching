@@ -8,7 +8,7 @@ namespace AutomataLibrary
 	{
 		protected SortedList<int, SortedList<char, int>> MDelta = new SortedList<int, SortedList<char, int>>();
 
-		public DFA(SortedSet<char> alphabet, SortedSet<int> states, List<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
+		public DFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
 			: base(alphabet, states, initialState, finalStates)
 		{
 			foreach(var item in deltaItems)
@@ -32,6 +32,38 @@ namespace AutomataLibrary
 				}
 			}
 		}
+
+	    public bool Accepts(string input)
+	    {
+            for (int i = 0; i < input.Length; i++)
+            {
+                List<Tuple<int, char, int>> steps = new List<Tuple<int, char, int>>();
+                int currentStep = MInitialState;
+                for (int j = i; j < input.Length; j++)
+                {
+                    SortedList<char, int> destItems;
+                    if (MDelta.TryGetValue(currentStep, out destItems))
+                    {
+                        int item2;
+                        if (destItems.TryGetValue(input[j], out item2))
+                        {
+                            steps.Add(new Tuple<int, char, int>(currentStep, input[j], item2));
+                            if (MFinalStates.Contains(item2))
+                            {
+                                Console.WriteLine("Nalezena shoda na pozici " + i + ".\nKroky:");
+                                foreach (var step in steps)
+                                {
+                                    Console.WriteLine("\t" + step.Item1 + "-" + step.Item2 + "-" + step.Item3);
+                                }
+                                break;
+                            }
+                            currentStep = item2;
+                        }
+                    }
+                }
+	        }
+	        return true;
+	    }
 
         public override string GetGraphString()
         {

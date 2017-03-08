@@ -16,9 +16,9 @@ namespace AutomataGeneratorLibrary
         protected List<Tuple<int, string, int>> DeltaItems;
         protected List<Tuple<int, int>> EpsilonItems;
 
-        protected AbstractAutomataGenerator(string pattern)
+        protected AbstractAutomataGenerator()
         {
-            MAlphabet = new SortedSet<char>(pattern.Distinct());
+            MAlphabet = new SortedSet<char>();
             MStates = new SortedSet<int>();
             DeltaItems = new List<Tuple<int, string, int>>();
             EpsilonItems = new List<Tuple<int, int>>();

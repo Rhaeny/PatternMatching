@@ -7,8 +7,13 @@ namespace AutomataGeneratorLibrary
     {
         protected int Qsize;
 
-        public LevenshteinDistanceAutomataGenerator(string pattern, int k) : base(pattern)
+        public LevenshteinDistanceAutomataGenerator(string pattern, int k)
         {
+            for (char c = 'a'; c <= 'z'; c++)
+            {
+                MAlphabet.Add(c);
+            }
+
             Qsize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
             int l = k;
