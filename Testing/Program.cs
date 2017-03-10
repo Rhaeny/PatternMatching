@@ -51,8 +51,8 @@ namespace Testing
             Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
-            System.IO.File.WriteAllBytes("GraphNFA.png", output);
+            /*byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
+            System.IO.File.WriteAllBytes("GraphNFA.png", output);*/
             
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
@@ -66,8 +66,8 @@ namespace Testing
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
             
-            output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
-            System.IO.File.WriteAllBytes("GraphDFA.png", output);
+            /*output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
+            System.IO.File.WriteAllBytes("GraphDFA.png", output);*/
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";

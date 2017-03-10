@@ -34,37 +34,33 @@ namespace AutomataLibrary
 			}
 		}
 
-	    public void Accepts(string input)
-	    {
+        public void Accepts(string input)
+        {
+            List<Tuple<int, char, int>> steps = new List<Tuple<int, char, int>>();
+            int currentStep = MInitialState;
             for (int i = 0; i < input.Length; i++)
             {
-                List<Tuple<int, char, int>> steps = new List<Tuple<int, char, int>>();
-                int currentStep = MInitialState;
-                for (int j = i; j < input.Length; j++)
+                SortedList<char, int> destItems;
+                if (MDelta.TryGetValue(currentStep, out destItems))
                 {
-                    SortedList<char, int> destItems;
-                    if (MDelta.TryGetValue(currentStep, out destItems))
+                    int item2;
+                    if (destItems.TryGetValue(input[i], out item2))
                     {
-                        int item2;
-                        if (destItems.TryGetValue(input[j], out item2))
+                        steps.Add(new Tuple<int, char, int>(currentStep, input[i], item2));
+                        if (MFinalStates.Contains(item2))
                         {
-                            steps.Add(new Tuple<int, char, int>(currentStep, input[j], item2));
-                            if (MFinalStates.Contains(item2))
+                            Console.WriteLine("Match found at position " + i + ".\nSteps:");
+                            foreach (var step in steps)
                             {
-                                Console.WriteLine("Match found at position " + j + ".\nSteps:");
-                                foreach (var step in steps)
-                                {
-                                    Console.WriteLine("\t" + step.Item1 + "-" + step.Item2 + "-" + step.Item3);
-                                }
-                                steps.Clear();
-                                break;
+                                Console.WriteLine("\t" + step.Item1 + "-" + step.Item2 + "-" + step.Item3);
                             }
-                            currentStep = item2;
+                            steps.Clear();
                         }
+                        currentStep = item2;
                     }
                 }
-	        }
-	    }
+            }
+        }
 
         public void PrintSortedSet(SortedSet<char> sortedSet)
         {
