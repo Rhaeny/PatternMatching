@@ -47,14 +47,15 @@ namespace AutomataLibrary
                     int state2;
                     if (destStates.TryGetValue(input[i], out state2))
                     {
+                        Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
                         steps.Add(new Tuple<int, char, int>(currentState, input[i], state2));
                         if (MFinalStates.Contains(state2))
                         {
-                            Console.WriteLine("Match found at position " + i + ".\nSteps:");
-                            foreach (var step in steps)
+                            Console.WriteLine(" Match found at position " + i + ".");
+                            /*foreach (var step in steps)
                             {
-                                Console.WriteLine("\t" + step.Item1 + "-" + step.Item2 + "-" + step.Item3);
-                            }
+                                Console.WriteLine("  (" + step.Item1 + "," + step.Item2 + ")->" + step.Item3);
+                            }*/
                             steps.Clear();
                         }
                         currentState = state2;

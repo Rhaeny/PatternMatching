@@ -74,7 +74,7 @@ namespace Testing
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
 
             Console.WriteLine("Enter input for NFA:");
-            nfa.Accepts(Console.ReadLine());
+            dfa.Accepts(Console.ReadLine());
         }
     }
 }

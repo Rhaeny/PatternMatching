@@ -187,12 +187,23 @@ namespace AutomataLibrary
                         SortedSet<int> states2;
                         if (destStates.TryGetValue(input[i], out states2))
                         {
+                            Console.WriteLine("(" + notProcessedState + "," + input[i] + ")");
                             foreach (var state2 in states2)
                             {
-                                Console.WriteLine(state2);
+                                Console.WriteLine(" " + state2);
                                 if (MFinalStates.Contains(state2))
                                 {
-                                    Console.WriteLine("Match found at position " + i + ".");
+                                    Console.WriteLine("  Match found at position " + i + ".");
+                                    int k = 0;
+                                    foreach (var fState in MFinalStates)
+                                    {
+                                        if (fState == state2)
+                                        {
+                                            Console.WriteLine("  Mistake: " + k);
+                                            break;
+                                        }
+                                        k++;
+                                    }
                                 }
                                 else
                                 {
@@ -202,7 +213,7 @@ namespace AutomataLibrary
                         }
                     }
                 }
-                notProcessedStateSet.UnionWith(nextStateList);
+                notProcessedStateSet = nextStateList;
             }
         }
 
