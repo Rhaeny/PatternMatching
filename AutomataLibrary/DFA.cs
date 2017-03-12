@@ -10,6 +10,7 @@ namespace AutomataLibrary
 		protected SortedList<int, SortedList<char, int>> MDelta = new SortedList<int, SortedList<char, int>>();
 
 		public DFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
+
 			: base(alphabet, states, initialState, finalStates)
 		{
 			foreach(var item in deltaItems)
@@ -37,17 +38,17 @@ namespace AutomataLibrary
         public void Accepts(string input)
         {
             List<Tuple<int, char, int>> steps = new List<Tuple<int, char, int>>();
-            int currentStep = MInitialState;
+            int currentState = MInitialState;
             for (int i = 0; i < input.Length; i++)
             {
-                SortedList<char, int> destItems;
-                if (MDelta.TryGetValue(currentStep, out destItems))
+                SortedList<char, int> destStates;
+                if (MDelta.TryGetValue(currentState, out destStates))
                 {
-                    int item2;
-                    if (destItems.TryGetValue(input[i], out item2))
+                    int state2;
+                    if (destStates.TryGetValue(input[i], out state2))
                     {
-                        steps.Add(new Tuple<int, char, int>(currentStep, input[i], item2));
-                        if (MFinalStates.Contains(item2))
+                        steps.Add(new Tuple<int, char, int>(currentState, input[i], state2));
+                        if (MFinalStates.Contains(state2))
                         {
                             Console.WriteLine("Match found at position " + i + ".\nSteps:");
                             foreach (var step in steps)
@@ -56,7 +57,7 @@ namespace AutomataLibrary
                             }
                             steps.Clear();
                         }
-                        currentStep = item2;
+                        currentState = state2;
                     }
                 }
             }
@@ -86,31 +87,31 @@ namespace AutomataLibrary
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
             foreach (var delta in MDelta)
             {
-                foreach (var transition in delta.Value)
+                foreach (var destState in delta.Value)
                 {
-                    foreach (var outputTrans in outputDelta.Where(outputTrans => outputTrans.Item1 == delta.Key && outputTrans.Item3 == transition.Value))
+                    foreach (var outputTrans in outputDelta.Where(outputTrans => outputTrans.Item1 == delta.Key && outputTrans.Item3 == destState.Value))
                     {
-                        outputTrans.Item2.Add(transition.Key);
+                        outputTrans.Item2.Add(destState.Key);
                     }
                 }
             }
-            SortedSet<char> patternSymbols = new SortedSet<char>();
+            SortedSet<char> patternAlphabet = new SortedSet<char>();
             foreach (var transition in outputDelta.Where(transition => transition.Item2.Count == 1))
             {
-                patternSymbols.Add(transition.Item2.First());
+                patternAlphabet.Add(transition.Item2.First());
                 output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=" + transition.Item2.First() + "];");
             }
             foreach (var transition in outputDelta.Where(transition => transition.Item2.Count > 1))
             {
-                SortedSet<char> missingSymbols = new SortedSet<char>();
-                foreach (var c in patternSymbols.Where(c => !transition.Item2.Contains(c)))
+                SortedSet<char> missingChars = new SortedSet<char>();
+                foreach (var c in patternAlphabet.Where(c => !transition.Item2.Contains(c)))
                 {
-                    missingSymbols.Add(c);
+                    missingChars.Add(c);
                 }
                 output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=Comp_");
-                foreach (var c in missingSymbols)
+                foreach (var ch in missingChars)
                 {
-                    output.Append(c);
+                    output.Append(ch);
                 }
                 output.Append("];");
             }

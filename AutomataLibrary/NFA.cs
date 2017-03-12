@@ -22,15 +22,15 @@ namespace AutomataLibrary
 				{
 					foreach (var ch in item.Item2)
 					{
-						SortedSet<int> s;
-						if (destStates.TryGetValue(ch, out s))
+						SortedSet<int> states2;
+						if (destStates.TryGetValue(ch, out states2))
 						{
-							s.Add(item.Item3);
+							states2.Add(item.Item3);
 						}
 						else
 						{
-							s = new SortedSet<int>() { item.Item3 };
-							destStates.Add(ch, s);
+							states2 = new SortedSet<int>() { item.Item3 };
+							destStates.Add(ch, states2);
 						}
 					}
 				}
@@ -46,78 +46,77 @@ namespace AutomataLibrary
 			}
 			foreach(var item in epsilonItems)
 			{
-				SortedSet<int> s;
-				if (MEpsilonTrans.TryGetValue(item.Item1, out s))
+				SortedSet<int> states2;
+				if (MEpsilonTrans.TryGetValue(item.Item1, out states2))
 				{
-					s.Add(item.Item2);
+					states2.Add(item.Item2);
 				}
 				else
 				{
-					s = new SortedSet<int>() { item.Item2};
-					MEpsilonTrans.Add(item.Item1, s);
+					states2 = new SortedSet<int>() { item.Item2};
+					MEpsilonTrans.Add(item.Item1, states2);
 				}
 			}
 		}
 
         public DFA TransformToDFA()
         {
-            SortedList<int, SortedList<char, SortedSet<int>>> deltaWithoutEpsilon = DeleteEpsilonTransitions();
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
             
             SortedSet<int> mStates = new SortedSet<int>();
             SortedSet<int> mFinalStates = new SortedSet<int>();
             List<Tuple<int, string, int>> mDelta = new List<Tuple<int, string, int>>();
 
             List<SortedSet<int>> processedStateSets = new List<SortedSet<int>>();
-            List<SortedSet<int>> s = new List<SortedSet<int>> {new SortedSet<int> {MInitialState}};
-            List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>> mDeltaSet = new List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>>();
+            List<SortedSet<int>> notProcessedStateSets = new List<SortedSet<int>> {new SortedSet<int> {MInitialState}};
+            List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>> mDeltaSets = new List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>>();
             
-            while (s.Count > 0)
+            while (notProcessedStateSets.Count > 0)
             {
-                processedStateSets.Add(s.First());
-                SortedList<char, SortedSet<int>> destItems = new SortedList<char, SortedSet<int>>();
+                SortedSet<int> currentStateSet = notProcessedStateSets.First();
+                processedStateSets.Add(currentStateSet);
+
+                mStates.Add(processedStateSets.Count - 1);
+                if (processedStateSets.Last().Any(state => MFinalStates.Contains(state)))
+                {
+                    mFinalStates.Add(processedStateSets.Count - 1);
+                }
+
+                SortedList<char, SortedSet<int>> allDestStates = new SortedList<char, SortedSet<int>>();
                 foreach (var a in MAlphabet)
                 {
                     SortedSet<int> nextStates = new SortedSet<int>();
-                    foreach (var state in s.First())
+                    foreach (var currentState in currentStateSet)
                     {
-                        SortedList<char, SortedSet<int>> transitions;
-                        if (deltaWithoutEpsilon.TryGetValue(state, out transitions))
+                        SortedList<char, SortedSet<int>> destStates;
+                        if (noEpsDelta.TryGetValue(currentState, out destStates))
                         {
-                            SortedSet<int> items2;
-                            if (transitions.TryGetValue(a, out items2))
+                            SortedSet<int> states2;
+                            if (destStates.TryGetValue(a, out states2))
                             {
-                                nextStates.UnionWith(items2);
+                                nextStates.UnionWith(states2);
                             }
                         }
                     }
-                    if (!s.Any(set => set.SetEquals(nextStates)) && !processedStateSets.Any(set => set.SetEquals(nextStates)))
+                    if (!notProcessedStateSets.Any(stateSet => stateSet.SetEquals(nextStates))
+                        && !processedStateSets.Any(stateSet => stateSet.SetEquals(nextStates)))
                     {
-                        s.Add(nextStates);
+                        notProcessedStateSets.Add(nextStates);
                     }
-                    destItems.Add(a, nextStates);
+                    allDestStates.Add(a, nextStates);
                 }
-                mDeltaSet.Add(new Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>(s.First(), destItems));
-                s.Remove(s.First());
+                mDeltaSets.Add(new Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>(currentStateSet, allDestStates));
+                notProcessedStateSets.Remove(currentStateSet);
             }
-
-            for (var i = 0; i < processedStateSets.Count; i++)
+            foreach (var transition in mDeltaSets)
             {
-                mStates.Add(i);
-                if (processedStateSets[i].Any(state => MFinalStates.Contains(state)))
+                int state1 = processedStateSets.FindIndex(stateSet => stateSet.SetEquals(transition.Item1));
+                foreach (var destStates in transition.Item2)
                 {
-                    mFinalStates.Add(i);
+                    int state2 = processedStateSets.FindIndex(stateSet => stateSet.SetEquals(destStates.Value));
+                    mDelta.Add(new Tuple<int, string, int>(state1, destStates.Key.ToString(), state2));
                 }
             }
-            foreach (var transition in mDeltaSet)
-            {
-                int item1 = processedStateSets.FindIndex(set => set.SetEquals(transition.Item1));
-                foreach (var destItems in transition.Item2)
-                {
-                    int item2 = processedStateSets.FindIndex(set => set.SetEquals(destItems.Value));
-                    mDelta.Add(new Tuple<int, string, int>(item1, destItems.Key.ToString(), item2));
-                }
-            }
-
             return new DFA(MAlphabet, mStates, mDelta, MInitialState, mFinalStates);
 	    }
 
@@ -127,53 +126,87 @@ namespace AutomataLibrary
             foreach (var state in MStates)
 	        {
                 SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
-                SortedSet<int> epsilonClosure = new SortedSet<int>();
-                GetEpsilonClosure(epsilonClosure, state);
+                SortedSet<int> epsilonClosureSet = new SortedSet<int>();
+                GetEpsilonClosure(epsilonClosureSet, state);
 	            foreach (var a in MAlphabet)
 	            {
-                    SortedSet<int> items2Sum = new SortedSet<int>();
-                    foreach (var epsilonClosureState in epsilonClosure)
+                    SortedSet<int> allStates2 = new SortedSet<int>();
+                    foreach (var epsilonClosureState in epsilonClosureSet)
                     {
-                        SortedSet<int> items2;
-                        if (GetItems2(epsilonClosureState, a, out items2))
+                        SortedSet<int> states2;
+                        if (GetStates2(epsilonClosureState, a, out states2))
                         {
-                            items2Sum.UnionWith(items2);
+                            allStates2.UnionWith(states2);
                         }
                     }
-                    destStates.Add(a, items2Sum);
+                    destStates.Add(a, allStates2);
                 }
                 newDelta.Add(state, destStates);
             }
 	        return newDelta;
 	    }
 
-        protected bool GetItems2(int state1, char a, out SortedSet<int> items2)
+        protected bool GetStates2(int state1, char ch, out SortedSet<int> states2)
 	    {
-            SortedList<char, SortedSet<int>> transitions;
-            if (MDelta.TryGetValue(state1, out transitions))
+            SortedList<char, SortedSet<int>> destStates;
+            if (MDelta.TryGetValue(state1, out destStates))
             {
-                if (transitions.TryGetValue(a, out items2))
+                if (destStates.TryGetValue(ch, out states2))
                 {
                     return true;
                 }
             }
-            items2 = null;
+            states2 = null;
 	        return false;
 	    }
 
-        protected void GetEpsilonClosure(SortedSet<int> epsilonClosure, int state)
+        protected void GetEpsilonClosure(SortedSet<int> epsilonClosureSet, int state)
 	    {
-            epsilonClosure.Add(state);
+            epsilonClosureSet.Add(state);
             foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == state))
 	        {
                 foreach (var value in epsTrans.Value)
 	            {
-	                GetEpsilonClosure(epsilonClosure, value);
+	                GetEpsilonClosure(epsilonClosureSet, value);
 	            }
 	        }
 	    }
 
-	    public void PrintSortedSet(SortedSet<int> sortedSet)
+        public void Accepts(string input)
+        {
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            SortedSet<int> notProcessedStateSet = new SortedSet<int> {MInitialState};
+            for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
+            {
+                SortedSet<int> nextStateList = new SortedSet<int>();
+                foreach (var notProcessedState in notProcessedStateSet)
+                {
+                    SortedList<char, SortedSet<int>> destStates;
+                    if (noEpsDelta.TryGetValue(notProcessedState, out destStates))
+                    {
+                        SortedSet<int> states2;
+                        if (destStates.TryGetValue(input[i], out states2))
+                        {
+                            foreach (var state2 in states2)
+                            {
+                                Console.WriteLine(state2);
+                                if (MFinalStates.Contains(state2))
+                                {
+                                    Console.WriteLine("Match found at position " + i + ".");
+                                }
+                                else
+                                {
+                                    nextStateList.Add(state2);
+                                }
+                            }
+                        }
+                    }
+                }
+                notProcessedStateSet.UnionWith(nextStateList);
+            }
+        }
+
+        public void PrintSortedSet(SortedSet<int> sortedSet)
 	    {
             Console.WriteLine();
             Console.Write("{ ");
@@ -197,13 +230,13 @@ namespace AutomataLibrary
             output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
             foreach (var delta in MDelta)
             {
-                foreach (var transition in delta.Value)
+                foreach (var destStates in delta.Value)
                 {
-                    foreach (var value in transition.Value)
+                    foreach (var state2 in destStates.Value)
                     {
-                        foreach (var outputTrans in outputDelta.Where(outputTrans => outputTrans.Item1 == delta.Key && outputTrans.Item3 == value))
+                        foreach (var outputTrans in outputDelta.Where(outputTrans => outputTrans.Item1 == delta.Key && outputTrans.Item3 == state2))
                         {
-                            outputTrans.Item2.Add(transition.Key);
+                            outputTrans.Item2.Add(destStates.Key);
                         }
                     }
                 }
