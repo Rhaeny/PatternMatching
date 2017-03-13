@@ -28,23 +28,26 @@ namespace AutomataGeneratorLibrary
                 }
                 else
                 {
+                    if (i == 0)
+                    {
+                        foreach (var a in MAlphabet)
+                        {
+                            DeltaItems.Add(new Tuple<int, string, int>(i, a.ToString(), i));
+                        }
+                    }
                     if (l < k)
                     {
                         int s = i + pattern.Length + 1 - l;
                         DeltaItems.Add(new Tuple<int, string, int>(i, pattern[r].ToString(), i + 1));
-                        foreach (var c in MAlphabet)
+                        foreach (var a in MAlphabet)
                         {
-                            DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), s));
-                            if (i == 0)
-                            {
-                                DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), i));
-                            }
+                            DeltaItems.Add(new Tuple<int, string, int>(i, a.ToString(), s));
                         }
                         if (r > l)
                         {
-                            foreach (var c in MAlphabet)
+                            foreach (var a in MAlphabet)
                             {
-                                DeltaItems.Add(new Tuple<int, string, int>(i, c.ToString(), s - 1));
+                                DeltaItems.Add(new Tuple<int, string, int>(i, a.ToString(), s - 1));
                             }
                         }
                         EpsilonItems.Add(new Tuple<int, int>(i, s));

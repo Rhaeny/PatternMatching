@@ -5,7 +5,8 @@ using System.Text;
 
 namespace AutomataLibrary
 {
-	public class DFA : AbstractFiniteAutomaton
+    [Serializable]
+    public class DFA : AbstractFiniteAutomaton
 	{
 		protected SortedList<int, SortedList<char, int>> MDelta = new SortedList<int, SortedList<char, int>>();
 
@@ -37,7 +38,6 @@ namespace AutomataLibrary
 
         public void Accepts(string input)
         {
-            List<Tuple<int, char, int>> steps = new List<Tuple<int, char, int>>();
             int currentState = MInitialState;
             for (int i = 0; i < input.Length; i++)
             {
@@ -48,15 +48,9 @@ namespace AutomataLibrary
                     if (destStates.TryGetValue(input[i], out state2))
                     {
                         Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
-                        steps.Add(new Tuple<int, char, int>(currentState, input[i], state2));
                         if (MFinalStates.Contains(state2))
                         {
                             Console.WriteLine(" Match found at position " + i + ".");
-                            /*foreach (var step in steps)
-                            {
-                                Console.WriteLine("  (" + step.Item1 + "," + step.Item2 + ")->" + step.Item3);
-                            }*/
-                            steps.Clear();
                         }
                         currentState = state2;
                     }

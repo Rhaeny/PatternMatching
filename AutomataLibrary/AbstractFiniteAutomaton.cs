@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AutomataLibrary
 {
+    [Serializable]
     public abstract class AbstractFiniteAutomaton
     {
 		protected SortedSet<char> MAlphabet;

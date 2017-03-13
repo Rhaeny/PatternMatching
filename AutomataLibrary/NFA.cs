@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace AutomataLibrary
 {
+    [Serializable]
 	public class NFA : AbstractFiniteAutomaton
 	{
 		protected SortedList<int, SortedList<char, SortedSet<int>>> MDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
@@ -58,6 +61,11 @@ namespace AutomataLibrary
 				}
 			}
 		}
+
+        public NFA()
+        {
+            
+        }
 
         public DFA TransformToDFA()
         {
@@ -190,7 +198,7 @@ namespace AutomataLibrary
                             Console.WriteLine("(" + notProcessedState + "," + input[i] + ")");
                             foreach (var state2 in states2)
                             {
-                                Console.WriteLine(" " + state2);
+                                Console.WriteLine(" ->" + state2);
                                 if (MFinalStates.Contains(state2))
                                 {
                                     Console.WriteLine("  Match found at position " + i + ".");

@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractFiniteAutomaton.cs" />
+    <Compile Include="AutomataDAO.cs" />
     <Compile Include="DFA.cs" />
+    <Compile Include="ISavable.cs" />
     <Compile Include="NFA.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

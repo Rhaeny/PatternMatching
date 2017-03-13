@@ -72,9 +72,23 @@ namespace Testing
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
+            
+            AutomataDAO.Save(dfa, "automaton");
+            DFA loadedDFA = AutomataDAO.Load("automaton") as DFA;
+            stopWatch.Restart();
 
-            Console.WriteLine("Enter input for NFA:");
-            dfa.Accepts(Console.ReadLine());
+            if (loadedDFA != null)
+            {
+                output = wrapper.GenerateGraph(loadedDFA.GetGraphString(), Enums.GraphReturnType.Png);
+                System.IO.File.WriteAllBytes("GraphDFAloaded.png", output);
+
+                ts = stopWatch.Elapsed;
+                elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+                Console.WriteLine("PNG image of loaded DFA generated. Runtime: " + elapsedTime);
+
+                Console.WriteLine("Enter input for DFA:");
+                loadedDFA.Accepts(Console.ReadLine());
+            }
         }
     }
 }
