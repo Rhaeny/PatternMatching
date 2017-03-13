@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace AutomataLibrary
 {
@@ -61,11 +60,6 @@ namespace AutomataLibrary
 				}
 			}
 		}
-
-        public NFA()
-        {
-            
-        }
 
         public DFA TransformToDFA()
         {
@@ -180,8 +174,9 @@ namespace AutomataLibrary
 	        }
 	    }
 
-        public void Accepts(string input)
+        public override void Accepts(string input)
         {
+            int x = 0;
             SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
             SortedSet<int> notProcessedStateSet = new SortedSet<int> {MInitialState};
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
@@ -195,14 +190,15 @@ namespace AutomataLibrary
                         SortedSet<int> states2;
                         if (destStates.TryGetValue(input[i], out states2))
                         {
-                            Console.WriteLine("(" + notProcessedState + "," + input[i] + ")");
+                            //Console.WriteLine("(" + notProcessedState + "," + input[i] + ")");
                             foreach (var state2 in states2)
                             {
-                                Console.WriteLine(" ->" + state2);
+                                //Console.WriteLine(" ->" + state2);
                                 if (MFinalStates.Contains(state2))
                                 {
-                                    Console.WriteLine("  Match found at position " + i + ".");
-                                    int k = 0;
+                                    //Console.WriteLine("  Match found at position " + i + ".");
+                                    x++;
+                                    /*int k = 0;
                                     foreach (var fState in MFinalStates)
                                     {
                                         if (fState == state2)
@@ -211,7 +207,7 @@ namespace AutomataLibrary
                                             break;
                                         }
                                         k++;
-                                    }
+                                    }*/
                                 }
                                 else
                                 {
@@ -223,6 +219,7 @@ namespace AutomataLibrary
                 }
                 notProcessedStateSet = nextStateList;
             }
+            Console.WriteLine("Total: " + x);
         }
 
         public void PrintSortedSet(SortedSet<int> sortedSet)

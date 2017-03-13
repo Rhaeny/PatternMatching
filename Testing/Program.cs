@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using AutomataGeneratorLibrary;
 using AutomataLibrary;
 using GraphVizWrapper;
@@ -52,14 +53,14 @@ namespace Testing
             stopWatch.Restart();
 
             byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
-            System.IO.File.WriteAllBytes("GraphNFA.png", output);
+            File.WriteAllBytes("GraphNFA.png", output);
             
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of NFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            DFA dfa = nfa.TransformToDFA();
+            /*DFA dfa = nfa.TransformToDFA();
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
@@ -67,28 +68,27 @@ namespace Testing
             stopWatch.Restart();
             
             output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
-            System.IO.File.WriteAllBytes("GraphDFA.png", output);
+            File.WriteAllBytes("GraphDFA.png", output);
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
-            
-            AutomataDAO.Save(dfa, "automaton");
-            DFA loadedDFA = AutomataDAO.Load("automaton") as DFA;
-            stopWatch.Restart();
+            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            if (loadedDFA != null)
-            {
-                output = wrapper.GenerateGraph(loadedDFA.GetGraphString(), Enums.GraphReturnType.Png);
-                System.IO.File.WriteAllBytes("GraphDFAloaded.png", output);
+            string fileText = File.ReadAllText(@"D:\large\latimes.txt").ToLower();
 
-                ts = stopWatch.Elapsed;
-                elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-                Console.WriteLine("PNG image of loaded DFA generated. Runtime: " + elapsedTime);
+            stopWatch = new Stopwatch();
+            stopWatch.Start();
 
-                Console.WriteLine("Enter input for DFA:");
-                loadedDFA.Accepts(Console.ReadLine());
-            }
+            var start = Process.GetCurrentProcess().TotalProcessorTime;
+
+            nfa.Accepts(fileText);
+
+            var stop = Process.GetCurrentProcess().TotalProcessorTime;
+            Console.WriteLine(stop - start);
+
+            ts = stopWatch.Elapsed;
+            elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
+            Console.WriteLine("String accepted. Runtime: " + elapsedTime);
         }
     }
 }

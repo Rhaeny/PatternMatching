@@ -19,10 +19,7 @@ namespace AutomataLibrary
 			MFinalStates = finalStates;
 		}
 
-        protected AbstractFiniteAutomaton()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void Accepts(string input);
 
         public abstract string GetGraphString();
     }

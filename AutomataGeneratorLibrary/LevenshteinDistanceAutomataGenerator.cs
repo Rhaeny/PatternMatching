@@ -9,7 +9,7 @@ namespace AutomataGeneratorLibrary
 
         public LevenshteinDistanceAutomataGenerator(string pattern, int k)
         {
-            for (char c = 'a'; c <= 'z'; c++)
+            for (char c = (char)000; c <= (char)255; c++)
             {
                 MAlphabet.Add(c);
             }

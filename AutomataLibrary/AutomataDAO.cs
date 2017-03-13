@@ -8,7 +8,6 @@ namespace AutomataLibrary
         public static void Save(AbstractFiniteAutomaton automaton, string fileName)
         {
             fileName = fileName + ".bin";
-
             using (FileStream fs = new FileStream(fileName, FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();

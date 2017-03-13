@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -36,8 +37,9 @@ namespace AutomataLibrary
 			}
 		}
 
-        public void Accepts(string input)
+        public override void Accepts(string input)
         {
+            int x = 0;
             int currentState = MInitialState;
             for (int i = 0; i < input.Length; i++)
             {
@@ -47,15 +49,17 @@ namespace AutomataLibrary
                     int state2;
                     if (destStates.TryGetValue(input[i], out state2))
                     {
-                        Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
+                        //Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
                         if (MFinalStates.Contains(state2))
                         {
                             Console.WriteLine(" Match found at position " + i + ".");
+                            x++;
                         }
                         currentState = state2;
                     }
                 }
             }
+            Console.WriteLine("Total: " + x);
         }
 
         public void PrintSortedSet(SortedSet<char> sortedSet)
