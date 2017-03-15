@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -15,6 +14,7 @@ namespace AutomataLibrary
 
 			: base(alphabet, states, initialState, finalStates)
 		{
+		    int transCount = 0;
 			foreach(var item in deltaItems)
 			{
 				SortedList<char, int> destStates;
@@ -23,7 +23,8 @@ namespace AutomataLibrary
 					foreach (var ch in item.Item2)
 					{
 						destStates.Add(ch, item.Item3);
-					}
+                        transCount++;
+                    }
 				}
 				else
 				{
@@ -31,11 +32,14 @@ namespace AutomataLibrary
 					foreach(var ch in item.Item2)
 					{
 						destStates.Add(ch, item.Item3);
+					    transCount++;
 					}
 					MDelta.Add(item.Item1, destStates);
 				}
 			}
-		}
+            Console.WriteLine("Number of DFA states: " + MStates.Count);
+            Console.WriteLine("Number of DFA transitions: " + transCount);
+        }
 
         public override void Accepts(string input)
         {

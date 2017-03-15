@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -17,6 +16,7 @@ namespace AutomataLibrary
 			int initialState, SortedSet<int> finalStates)
 			: base (alphabet, states, initialState, finalStates)
 		{
+            int transCount = 0;
             foreach (var item in deltaItems)
 			{
 				SortedList<char, SortedSet<int>> destStates;
@@ -28,12 +28,14 @@ namespace AutomataLibrary
 						if (destStates.TryGetValue(ch, out states2))
 						{
 							states2.Add(item.Item3);
-						}
+                            transCount++;
+                        }
 						else
 						{
 							states2 = new SortedSet<int>() { item.Item3 };
 							destStates.Add(ch, states2);
-						}
+                            transCount++;
+                        }
 					}
 				}
 				else
@@ -42,7 +44,8 @@ namespace AutomataLibrary
 					foreach (var ch in item.Item2)
 					{
 						destStates.Add(ch, new SortedSet<int>() { item.Item3 });
-					}
+                        transCount++;
+                    }
 					MDelta.Add(item.Item1, destStates);
 				}
 			}
@@ -59,7 +62,9 @@ namespace AutomataLibrary
 					MEpsilonTrans.Add(item.Item1, states2);
 				}
 			}
-		}
+            Console.WriteLine("Number of NFA states: " + MStates.Count);
+            Console.WriteLine("Number of NFA transitions: " + transCount);
+        }
 
         public DFA TransformToDFA()
         {
