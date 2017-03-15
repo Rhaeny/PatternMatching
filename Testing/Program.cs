@@ -52,31 +52,34 @@ namespace Testing
             Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
+            /*byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphNFA.png", output);
             
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of NFA generated. Runtime: " + elapsedTime);
-            stopWatch.Restart();
+            stopWatch.Restart();*/
 
-            /*DFA dfa = nfa.TransformToDFA();
+            DFA dfa = nfa.TransformToDFA();
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
             
-            output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
+            /*output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphDFA.png", output);
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            string fileText = File.ReadAllText(@"D:\large\latimes.txt").ToLower();
+            string fileName = @"D:\large\bible.txt";
+            string fileText = File.ReadAllText(fileName).ToLower();
 
-            stopWatch = new Stopwatch();
+            DisplayTimerProperties();
+
+            /*stopWatch = new Stopwatch();
             stopWatch.Start();
 
             var start = Process.GetCurrentProcess().TotalProcessorTime;
@@ -88,7 +91,88 @@ namespace Testing
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("String accepted. Runtime: " + elapsedTime);
+            Console.WriteLine("String accepted. Runtime: " + elapsedTime);*/
+            
+            long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
+            const long numIterations = 20;
+            
+            string[] operationNames = { "Operation: dfa.Accepts(" + fileName + ") for pattern " + pattern,
+                                        "Operation: nfa.Accepts(" + fileName + ") for pattern " + pattern};
+
+            for (int operation = 0; operation <= 1; operation++)
+            {
+                long numTicks = 0;
+                long maxTicks = 0;
+                long minTicks = Int64.MaxValue;
+                int indexFastest = -1;
+                int indexSlowest = -1;
+
+                Stopwatch time10KOperations = Stopwatch.StartNew();
+
+                for (int i = 0; i <= numIterations; i++)
+                {
+                    long ticksThisTime;
+                    Stopwatch timePerParse;
+
+                    switch (operation)
+                    {
+                        case 0:
+                            timePerParse = Stopwatch.StartNew();
+
+                            dfa.Accepts(fileText);
+
+                            ticksThisTime = timePerParse.ElapsedTicks;
+                            break;
+                        default:
+                            timePerParse = Stopwatch.StartNew();
+
+                            nfa.Accepts(fileText);
+
+                            timePerParse.Stop();
+                            ticksThisTime = timePerParse.ElapsedTicks;
+                            break;
+                    }
+                    if (i == 0)
+                    {
+                        time10KOperations.Reset();
+                        time10KOperations.Start();
+                    }
+                    else
+                    {
+                        if (maxTicks < ticksThisTime)
+                        {
+                            indexSlowest = i;
+                            maxTicks = ticksThisTime;
+                        }
+                        if (minTicks > ticksThisTime)
+                        {
+                            indexFastest = i;
+                            minTicks = ticksThisTime;
+                        }
+                        numTicks += ticksThisTime;
+                    }
+                }
+                time10KOperations.Stop();
+                var milliSec = time10KOperations.ElapsedMilliseconds;
+
+                Console.WriteLine();
+                Console.WriteLine("{0} Summary:", operationNames[operation]);
+                Console.WriteLine("  Slowest time:  #{0}/{1} = {2} nanoseconds", indexSlowest, numIterations, maxTicks * nanosecPerTick);
+                Console.WriteLine("  Fastest time:  #{0}/{1} = {2} nanoseconds", indexFastest, numIterations, minTicks * nanosecPerTick);
+                Console.WriteLine("  Average time:  {0} ticks = {1} nanoseconds", numTicks / numIterations, (numTicks * nanosecPerTick) / numIterations);
+                Console.WriteLine("  Total time looping through {0} operations: {1} milliseconds", numIterations, milliSec);
+            }
+        }
+
+        public static void DisplayTimerProperties()
+        {
+            Console.WriteLine(Stopwatch.IsHighResolution
+                ? "Operations timed using the system's high-resolution performance counter."
+                : "Operations timed using the DateTime class.");
+            long frequency = Stopwatch.Frequency;
+            Console.WriteLine("  Timer frequency in ticks per second = {0}", frequency);
+            long nanosecPerTick = (1000L * 1000L * 1000L) / frequency;
+            Console.WriteLine("  Timer is accurate within {0} nanoseconds", nanosecPerTick);
         }
     }
 }

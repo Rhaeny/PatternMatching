@@ -52,7 +52,7 @@ namespace AutomataLibrary
                         //Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
                         if (MFinalStates.Contains(state2))
                         {
-                            Console.WriteLine(" Match found at position " + i + ".");
+                            //Console.WriteLine(" Match found at position " + i + ".");
                             x++;
                         }
                         currentState = state2;

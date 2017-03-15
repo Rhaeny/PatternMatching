@@ -181,6 +181,7 @@ namespace AutomataLibrary
             SortedSet<int> notProcessedStateSet = new SortedSet<int> {MInitialState};
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
+                bool isFound = false;
                 SortedSet<int> nextStateList = new SortedSet<int>();
                 foreach (var notProcessedState in notProcessedStateSet)
                 {
@@ -190,29 +191,14 @@ namespace AutomataLibrary
                         SortedSet<int> states2;
                         if (destStates.TryGetValue(input[i], out states2))
                         {
-                            //Console.WriteLine("(" + notProcessedState + "," + input[i] + ")");
                             foreach (var state2 in states2)
                             {
-                                //Console.WriteLine(" ->" + state2);
-                                if (MFinalStates.Contains(state2))
+                                if (MFinalStates.Contains(state2) && !isFound)
                                 {
-                                    //Console.WriteLine("  Match found at position " + i + ".");
                                     x++;
-                                    /*int k = 0;
-                                    foreach (var fState in MFinalStates)
-                                    {
-                                        if (fState == state2)
-                                        {
-                                            Console.WriteLine("  Mistake: " + k);
-                                            break;
-                                        }
-                                        k++;
-                                    }*/
+                                    isFound = true;
                                 }
-                                else
-                                {
-                                    nextStateList.Add(state2);
-                                }
+                                nextStateList.Add(state2);
                             }
                         }
                     }
