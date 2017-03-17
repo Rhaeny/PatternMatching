@@ -74,8 +74,8 @@ namespace Testing
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            string fileName = @"D:\large\E.coli";
-            string fileText = File.ReadAllText(fileName).ToLower();
+            string fileName = @"D:\large\latimes.txt";
+            string fileText = File.ReadAllText(fileName);
             Console.WriteLine("Number of characters: " + fileText.Length);
 
             DisplayTimerProperties();
@@ -95,7 +95,7 @@ namespace Testing
             Console.WriteLine("String accepted. Runtime: " + elapsedTime);*/
             
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
-            const long numIterations = 21;
+            const long numIterations = 2;
             
             string[] operationNames = { "Operation: dfa.Accepts(" + fileName + ") for pattern " + pattern,
                                         "Operation: nfa.Accepts(" + fileName + ") for pattern " + pattern};

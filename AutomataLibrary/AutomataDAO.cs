@@ -22,7 +22,7 @@ namespace AutomataLibrary
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 AbstractFiniteAutomaton automaton = bf.Deserialize(fs) as AbstractFiniteAutomaton;
-                return automaton; 
+                return automaton;
             }
         }
     }

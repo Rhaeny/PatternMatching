@@ -141,7 +141,7 @@ namespace AutomataLibrary
                     foreach (var epsilonClosureState in epsilonClosureSet)
                     {
                         SortedSet<int> states2;
-                        if (GetStates2(epsilonClosureState, a, out states2))
+                        if (TryGetStates2(epsilonClosureState, a, out states2))
                         {
                             allStates2.UnionWith(states2);
                         }
@@ -153,7 +153,7 @@ namespace AutomataLibrary
 	        return newDelta;
 	    }
 
-        protected bool GetStates2(int state1, char ch, out SortedSet<int> states2)
+        protected bool TryGetStates2(int state1, char ch, out SortedSet<int> states2)
 	    {
             SortedList<char, SortedSet<int>> destStates;
             if (MDelta.TryGetValue(state1, out destStates))

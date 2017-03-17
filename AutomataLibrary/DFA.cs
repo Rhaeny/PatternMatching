@@ -45,18 +45,16 @@ namespace AutomataLibrary
         {
             int x = 0;
             int currentState = MInitialState;
-            for (int i = 0; i < input.Length; i++)
+            foreach (char ch in input)
             {
                 SortedList<char, int> destStates;
                 if (MDelta.TryGetValue(currentState, out destStates))
                 {
                     int state2;
-                    if (destStates.TryGetValue(input[i], out state2))
+                    if (destStates.TryGetValue(ch, out state2))
                     {
-                        //Console.WriteLine("(" + currentState + "," + input[i] + ")->" + state2);
                         if (MFinalStates.Contains(state2))
                         {
-                            //Console.WriteLine(" Match found at position " + i + ".");
                             x++;
                         }
                         currentState = state2;
