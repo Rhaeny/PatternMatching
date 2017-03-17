@@ -52,13 +52,13 @@ namespace Testing
             Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            /*byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(nfa.GetGraphString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphNFA.png", output);
             
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of NFA generated. Runtime: " + elapsedTime);
-            stopWatch.Restart();*/
+            stopWatch.Restart();
 
             DFA dfa = nfa.TransformToDFA();
 
@@ -67,32 +67,18 @@ namespace Testing
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
             
-            /*output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
+            output = wrapper.GenerateGraph(dfa.GetGraphString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphDFA.png", output);
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
+            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
 
-            string fileName = @"D:\large\latimes.txt";
+            string fileName = @"D:\large\bible.txt";
             string fileText = File.ReadAllText(fileName);
             Console.WriteLine("Number of characters: " + fileText.Length);
 
             DisplayTimerProperties();
-
-            /*stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            var start = Process.GetCurrentProcess().TotalProcessorTime;
-
-            nfa.Accepts(fileText);
-
-            var stop = Process.GetCurrentProcess().TotalProcessorTime;
-            Console.WriteLine(stop - start);
-
-            ts = stopWatch.Elapsed;
-            elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("String accepted. Runtime: " + elapsedTime);*/
             
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
             const long numIterations = 2;

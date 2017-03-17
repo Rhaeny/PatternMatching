@@ -69,27 +69,23 @@ namespace AutomataLibrary
         public DFA TransformToDFA()
         {
             SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-            
-            SortedSet<int> mStates = new SortedSet<int>();
-            SortedSet<int> mFinalStates = new SortedSet<int>();
-            List<Tuple<int, string, int>> mDelta = new List<Tuple<int, string, int>>();
 
-            List<SortedSet<int>> processedStateSets = new List<SortedSet<int>>();
-            List<SortedSet<int>> notProcessedStateSets = new List<SortedSet<int>> {new SortedSet<int> {MInitialState}};
-            List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>> mDeltaSets = new List<Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>>();
-            
+            SortedSet<int> states = new SortedSet<int> { MInitialState };
+            SortedSet<int> finalStates = new SortedSet<int>();
+            List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
+
+            List<SortedSet<int>> stateSets = new List<SortedSet<int>> { new SortedSet<int> { MInitialState } };
+            List<SortedSet<int>> notProcessedStateSets = new List<SortedSet<int>> { new SortedSet<int> { MInitialState } };
+
+            if (MFinalStates.Contains(MInitialState))
+            {
+                finalStates.Add(stateSets.Count - 1);
+            }
+
             while (notProcessedStateSets.Count > 0)
             {
                 SortedSet<int> currentStateSet = notProcessedStateSets.First();
-                processedStateSets.Add(currentStateSet);
-
-                mStates.Add(processedStateSets.Count - 1);
-                if (processedStateSets.Last().Any(state => MFinalStates.Contains(state)))
-                {
-                    mFinalStates.Add(processedStateSets.Count - 1);
-                }
-
-                SortedList<char, SortedSet<int>> allDestStates = new SortedList<char, SortedSet<int>>();
+                int state1 = stateSets.FindIndex(state => state.SetEquals(currentStateSet));
                 foreach (var a in MAlphabet)
                 {
                     SortedSet<int> nextStates = new SortedSet<int>();
@@ -106,28 +102,24 @@ namespace AutomataLibrary
                         }
                     }
                     if (!notProcessedStateSets.Any(stateSet => stateSet.SetEquals(nextStates))
-                        && !processedStateSets.Any(stateSet => stateSet.SetEquals(nextStates)))
+                        && !stateSets.Any(stateSet => stateSet.SetEquals(nextStates)))
                     {
                         notProcessedStateSets.Add(nextStates);
+                        stateSets.Add(nextStates);
+                        states.Add(stateSets.Count - 1);
+                        if (stateSets.Last().Any(state => MFinalStates.Contains(state)))
+                        {
+                            finalStates.Add(stateSets.Count - 1);
+                        }
                     }
-                    allDestStates.Add(a, nextStates);
+                    deltaItems.Add(new Tuple<int, string, int>(state1, a.ToString(), stateSets.FindIndex(state => state.SetEquals(nextStates))));
                 }
-                mDeltaSets.Add(new Tuple<SortedSet<int>, SortedList<char, SortedSet<int>>>(currentStateSet, allDestStates));
                 notProcessedStateSets.Remove(currentStateSet);
             }
-            foreach (var transition in mDeltaSets)
-            {
-                int state1 = processedStateSets.FindIndex(stateSet => stateSet.SetEquals(transition.Item1));
-                foreach (var destStates in transition.Item2)
-                {
-                    int state2 = processedStateSets.FindIndex(stateSet => stateSet.SetEquals(destStates.Value));
-                    mDelta.Add(new Tuple<int, string, int>(state1, destStates.Key.ToString(), state2));
-                }
-            }
-            return new DFA(MAlphabet, mStates, mDelta, MInitialState, mFinalStates);
-	    }
+            return new DFA(MAlphabet, states, deltaItems, MInitialState, finalStates);
+        }
 
-	    protected SortedList<int, SortedList<char, SortedSet<int>>> DeleteEpsilonTransitions()
+        protected SortedList<int, SortedList<char, SortedSet<int>>> DeleteEpsilonTransitions()
 	    {
             SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
             foreach (var state in MStates)
@@ -187,7 +179,7 @@ namespace AutomataLibrary
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
                 bool isFound = false;
-                SortedSet<int> nextStateList = new SortedSet<int>();
+                SortedSet<int> nextStateSet = new SortedSet<int>();
                 foreach (var notProcessedState in notProcessedStateSet)
                 {
                     SortedList<char, SortedSet<int>> destStates;
@@ -203,12 +195,12 @@ namespace AutomataLibrary
                                     x++;
                                     isFound = true;
                                 }
-                                nextStateList.Add(state2);
+                                nextStateSet.Add(state2);
                             }
                         }
                     }
                 }
-                notProcessedStateSet = nextStateList;
+                notProcessedStateSet = nextStateSet;
             }
             Console.WriteLine("Total: " + x);
         }
