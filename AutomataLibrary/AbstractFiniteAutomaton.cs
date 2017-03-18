@@ -21,6 +21,6 @@ namespace AutomataLibrary
 
         public abstract void Accepts(string input);
 
-        public abstract string GetGraphString();
+        public abstract string GetGraphvizString();
     }
 }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MyCollections;
 
 namespace AutomataLibrary
 {
     [Serializable]
 	public class NFA : AbstractFiniteAutomaton
 	{
-		protected SortedList<int, SortedList<char, SortedSet<int>>> MDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
+		protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> MDelta = new SortedList<int, SortedList<char, EquatableSortedSet<int>>>();
 		protected SortedList<int, SortedSet<int>> MEpsilonTrans = new SortedList<int, SortedSet<int>>();
 
 		public NFA(SortedSet<char> alphabet, SortedSet<int> states, 
@@ -19,12 +20,12 @@ namespace AutomataLibrary
             int transCount = 0;
             foreach (var item in deltaItems)
 			{
-				SortedList<char, SortedSet<int>> destStates;
+				SortedList<char, EquatableSortedSet<int>> destStates;
 				if (MDelta.TryGetValue(item.Item1, out destStates))
 				{
 					foreach (var ch in item.Item2)
 					{
-						SortedSet<int> states2;
+                        EquatableSortedSet<int> states2;
 						if (destStates.TryGetValue(ch, out states2))
 						{
 							states2.Add(item.Item3);
@@ -32,7 +33,7 @@ namespace AutomataLibrary
                         }
 						else
 						{
-							states2 = new SortedSet<int>() { item.Item3 };
+							states2 = new EquatableSortedSet<int> { item.Item3 };
 							destStates.Add(ch, states2);
                             transCount++;
                         }
@@ -40,10 +41,10 @@ namespace AutomataLibrary
 				}
 				else
 				{
-					destStates = new SortedList<char, SortedSet<int>>();
+					destStates = new SortedList<char, EquatableSortedSet<int>>();
 					foreach (var ch in item.Item2)
 					{
-						destStates.Add(ch, new SortedSet<int>() { item.Item3 });
+						destStates.Add(ch, new EquatableSortedSet<int> { item.Item3 });
                         transCount++;
                     }
 					MDelta.Add(item.Item1, destStates);
@@ -68,14 +69,14 @@ namespace AutomataLibrary
 
         public DFA TransformToDFA()
         {
-            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            SortedList<int, SortedList<char, EquatableSortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
 
-            SortedSet<int> states = new SortedSet<int> { MInitialState };
-            SortedSet<int> finalStates = new SortedSet<int>();
+            EquatableSortedSet<int> states = new EquatableSortedSet<int> { MInitialState };
+            EquatableSortedSet<int> finalStates = new EquatableSortedSet<int>();
             List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
 
-            List<SortedSet<int>> stateSets = new List<SortedSet<int>> { new SortedSet<int> { MInitialState } };
-            List<SortedSet<int>> notProcessedStateSets = new List<SortedSet<int>> { new SortedSet<int> { MInitialState } };
+            Dictionary<EquatableSortedSet<int>, int> stateSets = new Dictionary<EquatableSortedSet<int>, int> {{ new EquatableSortedSet<int> { MInitialState }, MInitialState }};
+            HashSet<EquatableSortedSet<int>> notProcessedStateSets = new HashSet<EquatableSortedSet<int>> { new EquatableSortedSet<int> { MInitialState } };
 
             if (MFinalStates.Contains(MInitialState))
             {
@@ -84,55 +85,57 @@ namespace AutomataLibrary
 
             while (notProcessedStateSets.Count > 0)
             {
-                SortedSet<int> currentStateSet = notProcessedStateSets.First();
-                int state1 = stateSets.FindIndex(state => state.SetEquals(currentStateSet));
+                EquatableSortedSet<int> currentStateSet = notProcessedStateSets.First();
+                int state1;
+                stateSets.TryGetValue(currentStateSet, out state1);
                 foreach (var a in MAlphabet)
                 {
-                    SortedSet<int> nextStates = new SortedSet<int>();
+                    EquatableSortedSet<int> nextStates = new EquatableSortedSet<int>();
                     foreach (var currentState in currentStateSet)
                     {
-                        SortedList<char, SortedSet<int>> destStates;
+                        SortedList<char, EquatableSortedSet<int>> destStates;
                         if (noEpsDelta.TryGetValue(currentState, out destStates))
                         {
-                            SortedSet<int> states2;
+                            EquatableSortedSet<int> states2;
                             if (destStates.TryGetValue(a, out states2))
                             {
                                 nextStates.UnionWith(states2);
                             }
                         }
                     }
-                    if (!notProcessedStateSets.Any(stateSet => stateSet.SetEquals(nextStates))
-                        && !stateSets.Any(stateSet => stateSet.SetEquals(nextStates)))
+                    if (!notProcessedStateSets.Contains(nextStates) && !stateSets.ContainsKey(nextStates))
                     {
                         notProcessedStateSets.Add(nextStates);
-                        stateSets.Add(nextStates);
+                        stateSets.Add(nextStates, stateSets.Count);
                         states.Add(stateSets.Count - 1);
-                        if (stateSets.Last().Any(state => MFinalStates.Contains(state)))
+                        if (stateSets.Last().Key.Any(state => MFinalStates.Contains(state)))
                         {
                             finalStates.Add(stateSets.Count - 1);
                         }
                     }
-                    deltaItems.Add(new Tuple<int, string, int>(state1, a.ToString(), stateSets.FindIndex(state => state.SetEquals(nextStates))));
+                    int state2;
+                    stateSets.TryGetValue(nextStates, out state2);
+                    deltaItems.Add(new Tuple<int, string, int>(state1, a.ToString(), state2));
                 }
                 notProcessedStateSets.Remove(currentStateSet);
             }
             return new DFA(MAlphabet, states, deltaItems, MInitialState, finalStates);
         }
 
-        protected SortedList<int, SortedList<char, SortedSet<int>>> DeleteEpsilonTransitions()
+        protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> DeleteEpsilonTransitions()
 	    {
-            SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
+            SortedList<int, SortedList<char, EquatableSortedSet<int>>> newDelta = new SortedList<int, SortedList<char, EquatableSortedSet<int>>>();
             foreach (var state in MStates)
 	        {
-                SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
-                SortedSet<int> epsilonClosureSet = new SortedSet<int>();
+                SortedList<char, EquatableSortedSet<int>> destStates = new SortedList<char, EquatableSortedSet<int>>();
+                EquatableSortedSet<int> epsilonClosureSet = new EquatableSortedSet<int>();
                 GetEpsilonClosure(epsilonClosureSet, state);
 	            foreach (var a in MAlphabet)
 	            {
-                    SortedSet<int> allStates2 = new SortedSet<int>();
+                    EquatableSortedSet<int> allStates2 = new EquatableSortedSet<int>();
                     foreach (var epsilonClosureState in epsilonClosureSet)
                     {
-                        SortedSet<int> states2;
+                        EquatableSortedSet<int> states2;
                         if (TryGetStates2(epsilonClosureState, a, out states2))
                         {
                             allStates2.UnionWith(states2);
@@ -145,9 +148,9 @@ namespace AutomataLibrary
 	        return newDelta;
 	    }
 
-        protected bool TryGetStates2(int state1, char ch, out SortedSet<int> states2)
+        protected bool TryGetStates2(int state1, char ch, out EquatableSortedSet<int> states2)
 	    {
-            SortedList<char, SortedSet<int>> destStates;
+            SortedList<char, EquatableSortedSet<int>> destStates;
             if (MDelta.TryGetValue(state1, out destStates))
             {
                 if (destStates.TryGetValue(ch, out states2))
@@ -174,18 +177,18 @@ namespace AutomataLibrary
         public override void Accepts(string input)
         {
             int x = 0;
-            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-            SortedSet<int> notProcessedStateSet = new SortedSet<int> {MInitialState};
+            SortedList<int, SortedList<char, EquatableSortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            EquatableSortedSet<int> notProcessedStateSet = new EquatableSortedSet<int> { MInitialState};
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
                 bool isFound = false;
-                SortedSet<int> nextStateSet = new SortedSet<int>();
+                EquatableSortedSet<int> nextStateSet = new EquatableSortedSet<int>();
                 foreach (var notProcessedState in notProcessedStateSet)
                 {
-                    SortedList<char, SortedSet<int>> destStates;
+                    SortedList<char, EquatableSortedSet<int>> destStates;
                     if (noEpsDelta.TryGetValue(notProcessedState, out destStates))
                     {
-                        SortedSet<int> states2;
+                        EquatableSortedSet<int> states2;
                         if (destStates.TryGetValue(input[i], out states2))
                         {
                             foreach (var state2 in states2)
@@ -207,17 +210,15 @@ namespace AutomataLibrary
 
         public void PrintSortedSet(SortedSet<int> sortedSet)
 	    {
-            Console.WriteLine();
-            Console.Write("{ ");
+            Console.Write("\n{ ");
             foreach (var closureState in sortedSet)
             {
                 Console.Write(closureState + " ");
             }
-            Console.Write("}");
-            Console.WriteLine();
+            Console.Write("}\n");
         }
 
-	    public override string GetGraphString()
+	    public override string GetGraphvizString()
 	    {
 	        StringBuilder output = new StringBuilder();
 	        List<Tuple<int, SortedSet<char>, int>> outputDelta = (from state1 in MStates from state2 in MStates select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();

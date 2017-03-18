@@ -76,7 +76,7 @@ namespace AutomataLibrary
             Console.WriteLine();
         }
 
-        public override string GetGraphString()
+        public override string GetGraphvizString()
         {
             StringBuilder output = new StringBuilder();
             List<Tuple<int, SortedSet<char>, int>> outputDelta = (from state1 in MStates from state2 in MStates select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
