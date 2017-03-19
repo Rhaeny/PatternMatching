@@ -79,13 +79,15 @@ namespace AutomataLibrary
         public override string GetGraphvizString()
         {
             StringBuilder output = new StringBuilder();
-            List<Tuple<int, SortedSet<char>, int>> outputDelta = (from state1 in MStates from state2 in MStates select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
-            output.Append("digraph{");
+            List<Tuple<int, SortedSet<char>, int>> outputDelta = (
+                from state1 in MStates
+                from state2 in MStates
+                select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
+            output.Append("digraph{Start [shape=plaintext];Start -> " + MInitialState + ";");
             foreach (var finalState in MFinalStates)
             {
                 output.Append(finalState + "[shape=doublecircle];");
             }
-            output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
             foreach (var delta in MDelta)
             {
                 foreach (var destState in delta.Value)
@@ -116,8 +118,7 @@ namespace AutomataLibrary
                 }
                 output.Append("];");
             }
-            output.Append("}");
-            return output.ToString();
+            return output.Append("}").ToString();
         }
     }
 }

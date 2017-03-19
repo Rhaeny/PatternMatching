@@ -12,10 +12,8 @@ namespace AutomataLibrary
 		protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> MDelta = new SortedList<int, SortedList<char, EquatableSortedSet<int>>>();
 		protected SortedList<int, SortedSet<int>> MEpsilonTrans = new SortedList<int, SortedSet<int>>();
 
-		public NFA(SortedSet<char> alphabet, SortedSet<int> states, 
-			IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
-			int initialState, SortedSet<int> finalStates)
-			: base (alphabet, states, initialState, finalStates)
+		public NFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
+			int initialState, SortedSet<int> finalStates) : base (alphabet, states, initialState, finalStates)
 		{
             int transCount = 0;
             foreach (var item in deltaItems)
@@ -70,18 +68,15 @@ namespace AutomataLibrary
         public DFA TransformToDFA()
         {
             SortedList<int, SortedList<char, EquatableSortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-
-            EquatableSortedSet<int> states = new EquatableSortedSet<int> { MInitialState };
+            
             EquatableSortedSet<int> finalStates = new EquatableSortedSet<int>();
             List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
 
-            Dictionary<EquatableSortedSet<int>, int> stateSets = new Dictionary<EquatableSortedSet<int>, int> {{ new EquatableSortedSet<int> { MInitialState }, MInitialState }};
             HashSet<EquatableSortedSet<int>> notProcessedStateSets = new HashSet<EquatableSortedSet<int>> { new EquatableSortedSet<int> { MInitialState } };
-
-            if (MFinalStates.Contains(MInitialState))
+            Dictionary<EquatableSortedSet<int>, int> stateSets = new Dictionary<EquatableSortedSet<int>, int>
             {
-                finalStates.Add(stateSets.Count - 1);
-            }
+                { new EquatableSortedSet<int> { MInitialState }, MInitialState }
+            };
 
             while (notProcessedStateSets.Count > 0)
             {
@@ -107,19 +102,18 @@ namespace AutomataLibrary
                     {
                         notProcessedStateSets.Add(nextStates);
                         stateSets.Add(nextStates, stateSets.Count);
-                        states.Add(stateSets.Count - 1);
-                        if (stateSets.Last().Key.Any(state => MFinalStates.Contains(state)))
-                        {
-                            finalStates.Add(stateSets.Count - 1);
-                        }
                     }
                     int state2;
                     stateSets.TryGetValue(nextStates, out state2);
                     deltaItems.Add(new Tuple<int, string, int>(state1, a.ToString(), state2));
                 }
+                if (currentStateSet.Any(state => MFinalStates.Contains(state)))
+                {
+                    finalStates.Add(state1);
+                }
                 notProcessedStateSets.Remove(currentStateSet);
             }
-            return new DFA(MAlphabet, states, deltaItems, MInitialState, finalStates);
+            return new DFA(MAlphabet, new SortedSet<int>(stateSets.Values), deltaItems, MInitialState, finalStates);
         }
 
         protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> DeleteEpsilonTransitions()
@@ -221,13 +215,15 @@ namespace AutomataLibrary
 	    public override string GetGraphvizString()
 	    {
 	        StringBuilder output = new StringBuilder();
-	        List<Tuple<int, SortedSet<char>, int>> outputDelta = (from state1 in MStates from state2 in MStates select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
-	        output.Append("digraph{");
+	        List<Tuple<int, SortedSet<char>, int>> outputDelta = (
+                from state1 in MStates
+                from state2 in MStates
+                select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
+	        output.Append("digraph{Start [shape=plaintext];Start -> " + MInitialState + ";");
 	        foreach (var finalState in MFinalStates)
 	        {
 	            output.Append(finalState + "[shape=doublecircle];");
 	        }
-            output.Append("Start [shape=plaintext];Start -> " + MInitialState + ";");
             foreach (var delta in MDelta)
             {
                 foreach (var destStates in delta.Value)
@@ -262,8 +258,7 @@ namespace AutomataLibrary
                     output.Append(epsTrans.Key + " -> " + value + " [label=Eps];");
                 }
             }
-            output.Append("}");
-            return output.ToString();
+            return output.Append("}").ToString();
 	    }
 	}
 }

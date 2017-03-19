@@ -52,13 +52,13 @@ namespace Testing
             Console.WriteLine("NFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            /*byte[] output = wrapper.GenerateGraph(nfa.GetGraphvizString(), Enums.GraphReturnType.Png);
+            byte[] output = wrapper.GenerateGraph(nfa.GetGraphvizString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphNFA.png", output);
             
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of NFA generated. Runtime: " + elapsedTime);
-            stopWatch.Restart();*/
+            stopWatch.Restart();
 
             DFA dfa = nfa.TransformToDFA();
 
@@ -67,12 +67,12 @@ namespace Testing
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
             
-            /*output = wrapper.GenerateGraph(dfa.GetGraphvizString(), Enums.GraphReturnType.Png);
+            output = wrapper.GenerateGraph(dfa.GetGraphvizString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphDFA.png", output);
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
+            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
 
             string fileName = @"D:\cantrbry\alice29.txt";
             string fileText = File.ReadAllText(fileName);
