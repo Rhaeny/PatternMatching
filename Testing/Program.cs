@@ -35,17 +35,8 @@ namespace Testing
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            switch (x)
-            {
-                case "1":
-                        aag = new HammingDistanceAutomataGenerator(pattern, k);
-                        break;
-                default:
-                        aag = new LevenshteinDistanceAutomataGenerator(pattern, k);
-                        break;
-            }
 
-            NFA nfa = aag.GetAutomata();
+            /*NFA nfa = aag.GetAutomata();
 
             TimeSpan ts = stopWatch.Elapsed;
             string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
@@ -76,16 +67,29 @@ namespace Testing
 
             string fileName = @"D:\cantrbry\alice29.txt";
             string fileText = File.ReadAllText(fileName);
-            Console.WriteLine("Number of characters: " + fileText.Length);
+            Console.WriteLine("Number of characters: " + fileText.Length);*/
 
             DisplayTimerProperties();
             
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
-            const long numIterations = 21;
-            
-            string[] operationNames = { "Operation: dfa.Accepts(" + fileName + ") for pattern " + pattern,
-                                        "Operation: nfa.Accepts(" + fileName + ") for pattern " + pattern};
+            const long numIterations = 3;
+            string[] operationNames =
+            {
+                "Operation: generating nfa for pattern " + pattern + " with mistake " + k,
+                "Operation: nfa.TransformToDFA() for pattern " + pattern + " with mistake " + k
+            };
 
+            switch (x)
+            {
+                case "1":
+                    aag = new HammingDistanceAutomataGenerator(pattern, k);
+                    break;
+                default:
+                    aag = new LevenshteinDistanceAutomataGenerator(pattern, k);
+                    break;
+            }
+
+            NFA nfa = aag.GetAutomata();
             for (int operation = 0; operation <= 1; operation++)
             {
                 long numTicks = 0;
@@ -105,15 +109,23 @@ namespace Testing
                     {
                         case 0:
                             timePerParse = Stopwatch.StartNew();
-
-                            dfa.Accepts(fileText);
+                            switch (x)
+                            {
+                                case "1":
+                                    aag = new HammingDistanceAutomataGenerator(pattern, k);
+                                    break;
+                                default:
+                                    aag = new LevenshteinDistanceAutomataGenerator(pattern, k);
+                                    break;
+                            }
+                            nfa = aag.GetAutomata();
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            nfa.Accepts(fileText);
+                            DFA dfa = nfa.TransformToDFA();
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;
