@@ -9,7 +9,7 @@ namespace AutomataLibrary
     [Serializable]
 	public class NFA : AbstractFiniteAutomaton
 	{
-		protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> MDelta = new SortedList<int, SortedList<char, EquatableSortedSet<int>>>();
+		protected SortedList<int, SortedList<char, SortedSet<int>>> MDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
 		protected SortedList<int, SortedSet<int>> MEpsilonTrans = new SortedList<int, SortedSet<int>>();
 
 		public NFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
@@ -18,12 +18,12 @@ namespace AutomataLibrary
             int transCount = 0;
             foreach (var item in deltaItems)
 			{
-				SortedList<char, EquatableSortedSet<int>> destStates;
+				SortedList<char, SortedSet<int>> destStates;
 				if (MDelta.TryGetValue(item.Item1, out destStates))
 				{
 					foreach (var ch in item.Item2)
 					{
-                        EquatableSortedSet<int> states2;
+                        SortedSet<int> states2;
 						if (destStates.TryGetValue(ch, out states2))
 						{
 							states2.Add(item.Item3);
@@ -31,7 +31,7 @@ namespace AutomataLibrary
                         }
 						else
 						{
-							states2 = new EquatableSortedSet<int> { item.Item3 };
+							states2 = new SortedSet<int> { item.Item3 };
 							destStates.Add(ch, states2);
                             transCount++;
                         }
@@ -39,10 +39,10 @@ namespace AutomataLibrary
 				}
 				else
 				{
-					destStates = new SortedList<char, EquatableSortedSet<int>>();
+					destStates = new SortedList<char, SortedSet<int>>();
 					foreach (var ch in item.Item2)
 					{
-						destStates.Add(ch, new EquatableSortedSet<int> { item.Item3 });
+						destStates.Add(ch, new SortedSet<int> { item.Item3 });
                         transCount++;
                     }
 					MDelta.Add(item.Item1, destStates);
@@ -67,15 +67,18 @@ namespace AutomataLibrary
 
         public DFA TransformToDFA()
         {
-            SortedList<int, SortedList<char, EquatableSortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-            
-            EquatableSortedSet<int> finalStates = new EquatableSortedSet<int>();
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+
+            SortedSet<int> finalStates = new SortedSet<int>();
             List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
 
-            HashSet<EquatableSortedSet<int>> notProcessedStateSets = new HashSet<EquatableSortedSet<int>> { new EquatableSortedSet<int> { MInitialState } };
+            HashSet<EquatableSortedSet<int>> notProcessedStateSets = new HashSet<EquatableSortedSet<int>>
+            {
+                new EquatableSortedSet<int> { MInitialState }
+            };
             Dictionary<EquatableSortedSet<int>, int> stateSets = new Dictionary<EquatableSortedSet<int>, int>
             {
-                { new EquatableSortedSet<int> { MInitialState }, MInitialState }
+                { new EquatableSortedSet<int> { MInitialState }, 0 }
             };
 
             while (notProcessedStateSets.Count > 0)
@@ -88,23 +91,26 @@ namespace AutomataLibrary
                     EquatableSortedSet<int> nextStates = new EquatableSortedSet<int>();
                     foreach (var currentState in currentStateSet)
                     {
-                        SortedList<char, EquatableSortedSet<int>> destStates;
+                        SortedList<char, SortedSet<int>> destStates;
                         if (noEpsDelta.TryGetValue(currentState, out destStates))
                         {
-                            EquatableSortedSet<int> states2;
+                            SortedSet<int> states2;
                             if (destStates.TryGetValue(a, out states2))
                             {
                                 nextStates.UnionWith(states2);
                             }
                         }
                     }
-                    if (!notProcessedStateSets.Contains(nextStates) && !stateSets.ContainsKey(nextStates))
-                    {
-                        notProcessedStateSets.Add(nextStates);
-                        stateSets.Add(nextStates, stateSets.Count);
-                    }
                     int state2;
-                    stateSets.TryGetValue(nextStates, out state2);
+                    if (!stateSets.TryGetValue(nextStates, out state2))
+                    {
+                        if (!notProcessedStateSets.Contains(nextStates))
+                        {
+                            notProcessedStateSets.Add(nextStates);
+                            stateSets.Add(nextStates, stateSets.Count);
+                            state2 = stateSets.Last().Value;
+                        }
+                    }
                     deltaItems.Add(new Tuple<int, string, int>(state1, a.ToString(), state2));
                 }
                 if (currentStateSet.Any(state => MFinalStates.Contains(state)))
@@ -116,20 +122,20 @@ namespace AutomataLibrary
             return new DFA(MAlphabet, new SortedSet<int>(stateSets.Values), deltaItems, MInitialState, finalStates);
         }
 
-        protected SortedList<int, SortedList<char, EquatableSortedSet<int>>> DeleteEpsilonTransitions()
+        protected SortedList<int, SortedList<char, SortedSet<int>>> DeleteEpsilonTransitions()
 	    {
-            SortedList<int, SortedList<char, EquatableSortedSet<int>>> newDelta = new SortedList<int, SortedList<char, EquatableSortedSet<int>>>();
+            SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
             foreach (var state in MStates)
 	        {
-                SortedList<char, EquatableSortedSet<int>> destStates = new SortedList<char, EquatableSortedSet<int>>();
-                EquatableSortedSet<int> epsilonClosureSet = new EquatableSortedSet<int>();
+                SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
+                SortedSet<int> epsilonClosureSet = new SortedSet<int>();
                 GetEpsilonClosure(epsilonClosureSet, state);
 	            foreach (var a in MAlphabet)
 	            {
-                    EquatableSortedSet<int> allStates2 = new EquatableSortedSet<int>();
+                    SortedSet<int> allStates2 = new SortedSet<int>();
                     foreach (var epsilonClosureState in epsilonClosureSet)
                     {
-                        EquatableSortedSet<int> states2;
+                        SortedSet<int> states2;
                         if (TryGetStates2(epsilonClosureState, a, out states2))
                         {
                             allStates2.UnionWith(states2);
@@ -142,9 +148,9 @@ namespace AutomataLibrary
 	        return newDelta;
 	    }
 
-        protected bool TryGetStates2(int state1, char ch, out EquatableSortedSet<int> states2)
+        protected bool TryGetStates2(int state1, char ch, out SortedSet<int> states2)
 	    {
-            SortedList<char, EquatableSortedSet<int>> destStates;
+            SortedList<char, SortedSet<int>> destStates;
             if (MDelta.TryGetValue(state1, out destStates))
             {
                 if (destStates.TryGetValue(ch, out states2))
@@ -171,18 +177,18 @@ namespace AutomataLibrary
         public override void Accepts(string input)
         {
             int x = 0;
-            SortedList<int, SortedList<char, EquatableSortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-            EquatableSortedSet<int> notProcessedStateSet = new EquatableSortedSet<int> { MInitialState};
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState};
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
                 bool isFound = false;
-                EquatableSortedSet<int> nextStateSet = new EquatableSortedSet<int>();
+                SortedSet<int> nextStateSet = new SortedSet<int>();
                 foreach (var notProcessedState in notProcessedStateSet)
                 {
-                    SortedList<char, EquatableSortedSet<int>> destStates;
+                    SortedList<char, SortedSet<int>> destStates;
                     if (noEpsDelta.TryGetValue(notProcessedState, out destStates))
                     {
-                        EquatableSortedSet<int> states2;
+                        SortedSet<int> states2;
                         if (destStates.TryGetValue(input[i], out states2))
                         {
                             foreach (var state2 in states2)

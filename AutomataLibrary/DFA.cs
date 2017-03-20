@@ -45,7 +45,7 @@ namespace AutomataLibrary
         {
             int x = 0;
             int currentState = MInitialState;
-            foreach (char ch in input)
+            foreach (var ch in input)
             {
                 SortedList<char, int> destStates;
                 if (MDelta.TryGetValue(currentState, out destStates))
