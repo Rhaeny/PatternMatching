@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using MyCollections;
@@ -174,7 +175,7 @@ namespace AutomataLibrary
 	        }
 	    }
 
-        public override void Accepts(string input)
+        public override void AcceptInput(string input)
         {
             int x = 0;
             SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
@@ -204,6 +205,48 @@ namespace AutomataLibrary
                     }
                 }
                 notProcessedStateSet = nextStateSet;
+            }
+            Console.WriteLine("Total: " + x);
+        }
+
+        public override void AcceptFile(string fileName)
+        {
+            int x = 0;
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState };
+            using (StreamReader r = new StreamReader(fileName))
+            {
+                char[] buffer = new char[1024];
+                int read;
+                while ((read = r.ReadBlock(buffer, 0, buffer.Length)) > 0 && notProcessedStateSet.Count > 0)
+                {
+                    for (int i = 0; i < read; i++)
+                    {
+                        bool isFound = false;
+                        SortedSet<int> nextStateSet = new SortedSet<int>();
+                        foreach (var notProcessedState in notProcessedStateSet)
+                        {
+                            SortedList<char, SortedSet<int>> destStates;
+                            if (noEpsDelta.TryGetValue(notProcessedState, out destStates))
+                            {
+                                SortedSet<int> states2;
+                                if (destStates.TryGetValue(buffer[i], out states2))
+                                {
+                                    foreach (var state2 in states2)
+                                    {
+                                        if (MFinalStates.Contains(state2) && !isFound)
+                                        {
+                                            x++;
+                                            isFound = true;
+                                        }
+                                        nextStateSet.Add(state2);
+                                    }
+                                }
+                            }
+                        }
+                        notProcessedStateSet = nextStateSet;
+                    }
+                }
             }
             Console.WriteLine("Total: " + x);
         }

@@ -67,19 +67,19 @@ namespace Testing
 
             DFA dfa = nfa.TransformToDFA();
 
-            /*ts = stopWatch.Elapsed;
+            ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
             stopWatch.Restart();
 
-            output = wrapper.GenerateGraph(dfa.GetGraphvizString(), Enums.GraphReturnType.Png);
-            File.WriteAllBytes("GraphDFA.png", output);*/
+            /*output = wrapper.GenerateGraph(dfa.GetGraphvizString(), Enums.GraphReturnType.Png);
+            File.WriteAllBytes("GraphDFA.png", output);
 
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);
+            Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            string fileName = @"D:\cantrbry\alice29.txt";
+            string fileName = @"D:\misc\pi.txt";
             string fileText = File.ReadAllText(fileName);
             Console.WriteLine("Number of characters: " + fileText.Length);
 
@@ -111,14 +111,14 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            dfa.Accepts(fileText);
+                            dfa.AcceptInput(fileText);
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            nfa.Accepts(fileText);
+                            nfa.AcceptInput(fileText);
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;

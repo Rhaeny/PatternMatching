@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -41,7 +42,7 @@ namespace AutomataLibrary
             Console.WriteLine("Number of DFA transitions: " + transCount);
         }
 
-        public override void Accepts(string input)
+        public override void AcceptInput(string input)
         {
             int x = 0;
             int currentState = MInitialState;
@@ -58,6 +59,37 @@ namespace AutomataLibrary
                             x++;
                         }
                         currentState = state2;
+                    }
+                }
+            }
+            Console.WriteLine("Total: " + x);
+        }
+
+        public override void AcceptFile(string fileName)
+        {
+            int x = 0;
+            int currentState = MInitialState;
+            using (StreamReader r = new StreamReader(fileName))
+            {
+                char[] buffer = new char[1024];
+                int read;
+                while ((read = r.ReadBlock(buffer, 0, buffer.Length)) > 0)
+                {
+                    for (int i = 0; i < read; i++)
+                    {
+                        SortedList<char, int> destStates;
+                        if (MDelta.TryGetValue(currentState, out destStates))
+                        {
+                            int state2;
+                            if (destStates.TryGetValue(buffer[i], out state2))
+                            {
+                                if (MFinalStates.Contains(state2))
+                                {
+                                    x++;
+                                }
+                                currentState = state2;
+                            }
+                        }
                     }
                 }
             }

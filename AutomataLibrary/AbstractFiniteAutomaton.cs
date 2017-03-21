@@ -19,7 +19,9 @@ namespace AutomataLibrary
 			MFinalStates = finalStates;
 		}
 
-        public abstract void Accepts(string input);
+        public abstract void AcceptInput(string input);
+
+        public abstract void AcceptFile(string fileName);
 
         public abstract string GetGraphvizString();
     }
