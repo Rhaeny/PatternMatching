@@ -57,10 +57,10 @@ namespace AutomataLibrary
         }
 
         /// <summary>
-        /// Accepts input text and finds number of matches by using basic method of simulation of run of <see cref="DFA"/>.
+        /// Accepts input text and finds count of matches by using basic method of simulation of run of <see cref="DFA"/>.
         /// </summary>
         /// <param name="input">Input text for automaton.</param>
-        /// <returns>Number of matches.</returns>
+        /// <returns>Count of matches.</returns>
         public override int AcceptInput(string input)
         {
             int matches = 0;
@@ -85,10 +85,10 @@ namespace AutomataLibrary
         }
 
         /// <summary>
-        /// Accepts file and finds number of matches by using basic method of simulation of run of <see cref="DFA"/>.
+        /// Accepts file and finds count of matches by using basic method of simulation of run of <see cref="DFA"/>.
         /// </summary>
         /// <param name="filePath">Path of the file.</param>
-        /// <returns>Number of matches.</returns>
+        /// <returns>Count of matches.</returns>
         public override int AcceptFile(string filePath)
         {
             int matches = 0;
@@ -124,7 +124,7 @@ namespace AutomataLibrary
         /// Prints sorted set to console for easy debugging.
         /// </summary>
         /// <param name="sortedSet">Sorted set to print.</param>
-        public void PrintSortedSet(SortedSet<char> sortedSet)
+        protected void PrintSortedSet(SortedSet<char> sortedSet)
         {
             Console.WriteLine();
             Console.Write("{ ");

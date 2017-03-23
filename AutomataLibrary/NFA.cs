@@ -199,7 +199,7 @@ namespace AutomataLibrary
 	    }
 
         /// <summary>
-        /// Recursively founds epsilon closure of <see cref="currentState"/>.
+        /// Recursively finds epsilon closure of <see cref="currentState"/>.
         /// </summary>
         /// <param name="currentState"> Current state whose states to get.</param>
         /// <param name="epsilonClosureSet">Set of states, that can be moved over from original state by epsilon transitions. Serves also as return value.</param>
@@ -216,10 +216,10 @@ namespace AutomataLibrary
 	    }
 
         /// <summary>
-        /// Accepts input text and finds number of matches by using basic method of simulation of run of <see cref="NFA"/>.
+        /// Accepts input text and finds count of matches by using basic method of simulation of run of <see cref="NFA"/>.
         /// </summary>
         /// <param name="input">Input text for automaton.</param>
-        /// <returns>Number of matches.</returns>
+        /// <returns>Count of matches.</returns>
         public override int AcceptInput(string input)
         {
             int matches = 0;
@@ -255,10 +255,10 @@ namespace AutomataLibrary
         }
 
         /// <summary>
-        /// Accepts file and finds number of matches by using basic method of simulation of run of <see cref="NFA"/>.
+        /// Accepts file and finds count of matches by using basic method of simulation of run of <see cref="NFA"/>.
         /// </summary>
         /// <param name="filePath">Path of the file.</param>
-        /// <returns>Number of matches.</returns>
+        /// <returns>Count of matches.</returns>
         public override int AcceptFile(string filePath)
         {
             int matches = 0;
@@ -305,7 +305,7 @@ namespace AutomataLibrary
         /// Prints sorted set to console for easy debugging.
         /// </summary>
         /// <param name="sortedSet">Sorted set to print.</param>
-        public void PrintSortedSet(SortedSet<int> sortedSet)
+        protected void PrintSortedSet(SortedSet<int> sortedSet)
 	    {
             Console.Write("\n{ ");
             foreach (var closureState in sortedSet)

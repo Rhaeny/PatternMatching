@@ -15,7 +15,7 @@ namespace AutomataGeneratorLibrary
         protected NFA NFA;
 
         /// <summary>
-        /// /// Set of all symbols contained in generated automaton <see cref="NFA"/>.
+        /// Set of all symbols contained in generated automaton <see cref="NFA"/>.
         /// </summary>
         protected SortedSet<char> MAlphabet;
 
