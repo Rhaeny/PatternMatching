@@ -3,28 +3,34 @@ using AutomataLibrary;
 
 namespace AutomataGeneratorLibrary
 {
+    /// <summary>
+    /// Levenshtein distance automata generator.
+    /// </summary>
     public class LevenshteinDistanceAutomataGenerator : AbstractAutomataGenerator
     {
-        protected int Qsize;
-
+        /// <summary>
+        /// Generates <see cref="NFA"/> based on <see cref="pattern"/> and <see cref="k"/> parameters.
+        /// </summary>
+        /// <param name="pattern">The pattern of automaton.</param>
+        /// <param name="k">Maximum number of errors.</param>
         public LevenshteinDistanceAutomataGenerator(string pattern, int k)
         {
             if (k > pattern.Length)
             {
                 k = pattern.Length;
             }
-
+            
             for (char c = (char)000; c <= (char)255; c++)
             {
                 MAlphabet.Add(c);
             }
 
-            Qsize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
+            int qSize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
             int l = k;
             int r = pattern.Length;
 
-            for (int i = Qsize - 1; i >= 0; i--)
+            for (int i = qSize - 1; i >= 0; i--)
             {
                 MStates.Add(i);
                 if (r == pattern.Length)

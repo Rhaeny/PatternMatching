@@ -79,7 +79,7 @@ namespace Testing
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            string fileName = @"D:\misc\pi.txt";
+            string fileName = @"D:\cantrbry\alice29.txt";
             string fileText = File.ReadAllText(fileName);
             Console.WriteLine("Number of characters: " + fileText.Length);
 
@@ -111,14 +111,14 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            dfa.AcceptInput(fileText);
+                            Console.WriteLine("Total: " + dfa.AcceptInput(fileText));
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            nfa.AcceptInput(fileText);
+                            Console.WriteLine("Total: " + nfa.AcceptFile(fileName));
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;

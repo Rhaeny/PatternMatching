@@ -7,12 +7,31 @@ using MyCollections;
 
 namespace AutomataLibrary
 {
+    /// <summary>
+    /// Nondeterministic finite automaton class.
+    /// </summary>
     [Serializable]
 	public class NFA : AbstractFiniteAutomaton
 	{
+        /// <summary>
+        /// Sorted list of delta transitions.
+        /// </summary>
 		protected SortedList<int, SortedList<char, SortedSet<int>>> MDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
+
+        /// <summary>
+        /// Sorted list of epsilon transition.
+        /// </summary>
 		protected SortedList<int, SortedSet<int>> MEpsilonTrans = new SortedList<int, SortedSet<int>>();
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="NFA"/>.
+        /// </summary>
+        /// <param name="alphabet">Set of all symbols contained in automaton.</param>
+        /// <param name="states">Set of states of automaton.</param>
+        /// <param name="deltaItems">Collection of delta transitions of automaton.</param>
+        /// <param name="epsilonItems">Collection of epsilon transitions of automaton.</param>
+        /// <param name="initialState">Initial state of automaton.</param>
+        /// <param name="finalStates">Set of final states of automaton.</param>
 		public NFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
 			int initialState, SortedSet<int> finalStates) : base (alphabet, states, initialState, finalStates)
 		{
@@ -66,9 +85,13 @@ namespace AutomataLibrary
             Console.WriteLine("Number of NFA transitions: " + transCount);
         }
 
+        /// <summary>
+        /// Tranforms this <see cref="NFA"/> to equivalent <see cref="DFA"/> by using the standard subset construction.
+        /// </summary>
+        /// <returns><see cref="DFA"/> equivalent to this <see cref="NFA"/>.</returns>
         public DFA TransformToDFA()
         {
-            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = RemoveEpsilonTransitions();
 
             SortedSet<int> finalStates = new SortedSet<int>();
             List<Tuple<int, string, int>> deltaItems = new List<Tuple<int, string, int>>();
@@ -123,14 +146,18 @@ namespace AutomataLibrary
             return new DFA(MAlphabet, new SortedSet<int>(stateSets.Values), deltaItems, MInitialState, finalStates);
         }
 
-        protected SortedList<int, SortedList<char, SortedSet<int>>> DeleteEpsilonTransitions()
+        /// <summary>
+        /// Adds additional transitions by removing epsilon transitions from <see cref="MEpsilonTrans"/>.
+        /// </summary>
+        /// <returns>Sorted list of altered delta transitions.</returns>
+        protected SortedList<int, SortedList<char, SortedSet<int>>> RemoveEpsilonTransitions()
 	    {
             SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
             foreach (var state in MStates)
 	        {
                 SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
                 SortedSet<int> epsilonClosureSet = new SortedSet<int>();
-                GetEpsilonClosure(epsilonClosureSet, state);
+                GetEpsilonClosure(state, epsilonClosureSet);
 	            foreach (var a in MAlphabet)
 	            {
                     SortedSet<int> allStates2 = new SortedSet<int>();
@@ -149,12 +176,20 @@ namespace AutomataLibrary
 	        return newDelta;
 	    }
 
-        protected bool TryGetStates2(int state1, char ch, out SortedSet<int> states2)
+        /// <summary>
+        /// Gets all states, that can be moved over by symbol <see cref="a"/> from <see cref="currentState"/>.
+        /// </summary>
+        /// <param name="currentState">The current state whose states to get.</param>
+        /// <param name="a">The symbol to move over.</param>
+        /// <param name="states2">When this method returns, the set of states that can be accessed via symbol <see cref="a"/> from <see cref="currentState"/>,
+        /// if the current state is found; otherwise, the default value for the type of <see cref="states2"/> parameter. This parameter is passed uninitialized.</param>
+        /// <returns>True, if at least one state is found; False, otherwise.</returns>
+        protected bool TryGetStates2(int currentState, char a, out SortedSet<int> states2)
 	    {
             SortedList<char, SortedSet<int>> destStates;
-            if (MDelta.TryGetValue(state1, out destStates))
+            if (MDelta.TryGetValue(currentState, out destStates))
             {
-                if (destStates.TryGetValue(ch, out states2))
+                if (destStates.TryGetValue(a, out states2))
                 {
                     return true;
                 }
@@ -163,22 +198,32 @@ namespace AutomataLibrary
 	        return false;
 	    }
 
-        protected void GetEpsilonClosure(SortedSet<int> epsilonClosureSet, int state)
+        /// <summary>
+        /// Recursively founds epsilon closure of <see cref="currentState"/>.
+        /// </summary>
+        /// <param name="currentState"> Current state whose states to get.</param>
+        /// <param name="epsilonClosureSet">Set of states, that can be moved over from original state by epsilon transitions. Serves also as return value.</param>
+        protected void GetEpsilonClosure(int currentState, SortedSet<int> epsilonClosureSet)
 	    {
-            epsilonClosureSet.Add(state);
-            foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == state))
+            epsilonClosureSet.Add(currentState);
+            foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == currentState))
 	        {
-                foreach (var value in epsTrans.Value)
+                foreach (var state2 in epsTrans.Value)
 	            {
-	                GetEpsilonClosure(epsilonClosureSet, value);
+	                GetEpsilonClosure(state2, epsilonClosureSet);
 	            }
 	        }
 	    }
 
-        public override void AcceptInput(string input)
+        /// <summary>
+        /// Accepts input text and finds number of matches by using basic method of simulation of run of <see cref="NFA"/>.
+        /// </summary>
+        /// <param name="input">Input text for automaton.</param>
+        /// <returns>Number of matches.</returns>
+        public override int AcceptInput(string input)
         {
-            int x = 0;
-            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
+            int matches = 0;
+            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = RemoveEpsilonTransitions();
             SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState};
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
@@ -196,7 +241,7 @@ namespace AutomataLibrary
                             {
                                 if (MFinalStates.Contains(state2) && !isFound)
                                 {
-                                    x++;
+                                    matches++;
                                     isFound = true;
                                 }
                                 nextStateSet.Add(state2);
@@ -206,16 +251,21 @@ namespace AutomataLibrary
                 }
                 notProcessedStateSet = nextStateSet;
             }
-            Console.WriteLine("Total: " + x);
+            return matches;
         }
 
-        public override void AcceptFile(string fileName)
+        /// <summary>
+        /// Accepts file and finds number of matches by using basic method of simulation of run of <see cref="NFA"/>.
+        /// </summary>
+        /// <param name="filePath">Path of the file.</param>
+        /// <returns>Number of matches.</returns>
+        public override int AcceptFile(string filePath)
         {
-            int x = 0;
-            SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = DeleteEpsilonTransitions();
-            SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState };
-            using (StreamReader r = new StreamReader(fileName))
+            int matches = 0;
+            using (StreamReader r = new StreamReader(filePath))
             {
+                SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = RemoveEpsilonTransitions();
+                SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState };
                 char[] buffer = new char[1024];
                 int read;
                 while ((read = r.ReadBlock(buffer, 0, buffer.Length)) > 0 && notProcessedStateSet.Count > 0)
@@ -236,7 +286,7 @@ namespace AutomataLibrary
                                     {
                                         if (MFinalStates.Contains(state2) && !isFound)
                                         {
-                                            x++;
+                                            matches++;
                                             isFound = true;
                                         }
                                         nextStateSet.Add(state2);
@@ -248,9 +298,13 @@ namespace AutomataLibrary
                     }
                 }
             }
-            Console.WriteLine("Total: " + x);
+            return matches;
         }
 
+        /// <summary>
+        /// Prints sorted set to console for easy debugging.
+        /// </summary>
+        /// <param name="sortedSet">Sorted set to print.</param>
         public void PrintSortedSet(SortedSet<int> sortedSet)
 	    {
             Console.Write("\n{ ");
@@ -261,6 +315,10 @@ namespace AutomataLibrary
             Console.Write("}\n");
         }
 
+        /// <summary>
+        /// Gets dot string of <see cref="NFA"/> that can be passed to Graphviz graph generator.
+        /// </summary>
+        /// <returns>Dot string of <see cref="NFA"/>.</returns>
 	    public override string GetGraphvizString()
 	    {
 	        StringBuilder output = new StringBuilder();

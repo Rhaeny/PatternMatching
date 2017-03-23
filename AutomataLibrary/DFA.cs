@@ -6,11 +6,25 @@ using System.Text;
 
 namespace AutomataLibrary
 {
+    /// <summary>
+    /// Deterministic finite automaton class.
+    /// </summary>
     [Serializable]
     public class DFA : AbstractFiniteAutomaton
 	{
+        /// <summary>
+        /// Sorted list of delta transitions.
+        /// </summary>
 		protected SortedList<int, SortedList<char, int>> MDelta = new SortedList<int, SortedList<char, int>>();
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="DFA"/>.
+        /// </summary>
+        /// <param name="alphabet">Set of all symbols contained in automaton.</param>
+        /// <param name="states">Set of states of automaton.</param>
+        /// <param name="deltaItems">Collection of delta transitions of automaton.</param>
+        /// <param name="initialState">Initial state of automaton.</param>
+        /// <param name="finalStates">Set of final states of automaton.</param>
 		public DFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
 
 			: base(alphabet, states, initialState, finalStates)
@@ -42,9 +56,14 @@ namespace AutomataLibrary
             Console.WriteLine("Number of DFA transitions: " + transCount);
         }
 
-        public override void AcceptInput(string input)
+        /// <summary>
+        /// Accepts input text and finds number of matches by using basic method of simulation of run of <see cref="DFA"/>.
+        /// </summary>
+        /// <param name="input">Input text for automaton.</param>
+        /// <returns>Number of matches.</returns>
+        public override int AcceptInput(string input)
         {
-            int x = 0;
+            int matches = 0;
             int currentState = MInitialState;
             foreach (var ch in input)
             {
@@ -56,20 +75,25 @@ namespace AutomataLibrary
                     {
                         if (MFinalStates.Contains(state2))
                         {
-                            x++;
+                            matches++;
                         }
                         currentState = state2;
                     }
                 }
             }
-            Console.WriteLine("Total: " + x);
+            return matches;
         }
 
-        public override void AcceptFile(string fileName)
+        /// <summary>
+        /// Accepts file and finds number of matches by using basic method of simulation of run of <see cref="DFA"/>.
+        /// </summary>
+        /// <param name="filePath">Path of the file.</param>
+        /// <returns>Number of matches.</returns>
+        public override int AcceptFile(string filePath)
         {
-            int x = 0;
+            int matches = 0;
             int currentState = MInitialState;
-            using (StreamReader r = new StreamReader(fileName))
+            using (StreamReader r = new StreamReader(filePath))
             {
                 char[] buffer = new char[1024];
                 int read;
@@ -85,7 +109,7 @@ namespace AutomataLibrary
                             {
                                 if (MFinalStates.Contains(state2))
                                 {
-                                    x++;
+                                    matches++;
                                 }
                                 currentState = state2;
                             }
@@ -93,9 +117,13 @@ namespace AutomataLibrary
                     }
                 }
             }
-            Console.WriteLine("Total: " + x);
+            return matches;
         }
 
+        /// <summary>
+        /// Prints sorted set to console for easy debugging.
+        /// </summary>
+        /// <param name="sortedSet">Sorted set to print.</param>
         public void PrintSortedSet(SortedSet<char> sortedSet)
         {
             Console.WriteLine();
@@ -108,6 +136,10 @@ namespace AutomataLibrary
             Console.WriteLine();
         }
 
+        /// <summary>
+        /// Gets dot string of <see cref="DFA"/> that can be passed to Graphviz graph generator.
+        /// </summary>
+        /// <returns>Dot string of <see cref="DFA"/>.</returns>
         public override string GetGraphvizString()
         {
             StringBuilder output = new StringBuilder();

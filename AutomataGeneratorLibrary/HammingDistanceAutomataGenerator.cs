@@ -3,10 +3,16 @@ using AutomataLibrary;
 
 namespace AutomataGeneratorLibrary
 {
+    /// <summary>
+    /// Hamming distance automata generator.
+    /// </summary>
     public class HammingDistanceAutomataGenerator : AbstractAutomataGenerator
     {
-        protected int Qsize;
-
+        /// <summary>
+        /// Generates <see cref="NFA"/> based on <see cref="pattern"/> and <see cref="k"/> parameters.
+        /// </summary>
+        /// <param name="pattern">The pattern of automaton.</param>
+        /// <param name="k">Maximum number of errors.</param>
         public HammingDistanceAutomataGenerator(string pattern, int k)
         {
             if (k > pattern.Length)
@@ -18,13 +24,13 @@ namespace AutomataGeneratorLibrary
             {
                 MAlphabet.Add(c);
             }
-
-            Qsize = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
+            
+            int qCount = (int)Math.Round((k + 1) * (pattern.Length + 1 - (double)k / 2), MidpointRounding.AwayFromZero);
 
             int l = 0;
             int r = 0;
 
-            for (int i = 0; i < Qsize; i++)
+            for (int i = 0; i < qCount; i++)
             {
                 MStates.Add(i);
                 if (r >= pattern.Length)
