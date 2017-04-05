@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractAutomataGenerator.cs" />
     <Compile Include="HammingDistanceAutomataGenerator.cs" />
     <Compile Include="LevenshteinDistanceAutomataGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

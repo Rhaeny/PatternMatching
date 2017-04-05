@@ -268,7 +268,7 @@ namespace AutomataLibrary
                 SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState };
                 char[] buffer = new char[1024];
                 int read;
-                while ((read = r.ReadBlock(buffer, 0, buffer.Length)) > 0 && notProcessedStateSet.Count > 0)
+                while ((read = r.ReadBlock(buffer, 0, buffer.Length)) > 0)
                 {
                     for (int i = 0; i < read; i++)
                     {
@@ -294,7 +294,10 @@ namespace AutomataLibrary
                                 }
                             }
                         }
-                        notProcessedStateSet = nextStateSet;
+                        if (nextStateSet.Count > 0)
+                        {
+                            notProcessedStateSet = nextStateSet;
+                        }
                     }
                 }
             }
