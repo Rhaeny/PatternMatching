@@ -347,20 +347,33 @@ namespace AutomataLibrary
                     }
                 }
             }
-	        foreach (var transition in outputDelta)
-	        {
-	            if (transition.Item2.SetEquals(MAlphabet))
-	            {
+            SortedSet<char> patternAlphabet = new SortedSet<char>();
+            foreach (var transition in outputDelta.Where(transition => transition.Item2.Count == 1))
+            {
+                patternAlphabet.Add(transition.Item2.First());
+                output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=" + transition.Item2.First() + "];");
+            }
+            foreach (var transition in outputDelta.Where(transition => transition.Item2.Count > 1))
+            {
+                if (transition.Item2.SetEquals(MAlphabet))
+                {
                     output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=Sig];");
                 }
-	            else
-	            {
-                    foreach (var symbol in transition.Item2)
+                else
+                {
+                    SortedSet<char> missingChars = new SortedSet<char>();
+                    foreach (var c in patternAlphabet.Where(c => !transition.Item2.Contains(c)))
                     {
-                        output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=" + symbol + "];");
+                        missingChars.Add(c);
                     }
+                    output.Append(transition.Item1 + " -> " + transition.Item3 + " [label=Comp_");
+                    foreach (var ch in missingChars)
+                    {
+                        output.Append(ch);
+                    }
+                    output.Append("];");
                 }
-	        }
+            }
             foreach (var epsTrans in MEpsilonTrans)
             {
                 foreach (var value in epsTrans.Value)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using AutomataGeneratorLibrary;
 using AutomataLibrary;
 using GraphVizWrapper;
@@ -12,7 +13,7 @@ namespace Testing
     {
         private static void Main(string[] args)
         {
-            TestTransform();
+            TestAccept();
         }
 
         public static void TestAccept()
@@ -43,11 +44,11 @@ namespace Testing
             {
                 case "1":
                     HammingDistanceAutomataGenerator hammingGen = new HammingDistanceAutomataGenerator();
-                    nfa = hammingGen.GenerateNFA(pattern, k);
+                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
                     break;
                 default:
                     LevenshteinDistanceAutomataGenerator levenshteinGen = new LevenshteinDistanceAutomataGenerator();
-                    nfa = levenshteinGen.GenerateNFA(pattern, k);
+                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                     break;
             }
 
@@ -69,7 +70,6 @@ namespace Testing
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("DFA generated. Runtime: " + elapsedTime);
-            stopWatch.Restart();
 
             /*output = wrapper.GenerateGraph(dfa.GetGraphvizString(), Enums.GraphReturnType.Png);
             File.WriteAllBytes("GraphDFA.png", output);
@@ -114,7 +114,7 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine("Total: " + dfa.AcceptFile(fileName));
+                            Console.WriteLine("Total: " + nfa.AcceptFile(fileName));
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
@@ -188,10 +188,10 @@ namespace Testing
             switch (x)
             {
                 case "1":
-                    nfa = hammingGen.GenerateNFA(pattern, k);
+                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
                     break;
                 default:
-                    nfa = levenshteinGen.GenerateNFA(pattern, k);
+                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                     break;
             }
             
@@ -217,10 +217,10 @@ namespace Testing
                             switch (x)
                             {
                                 case "1":
-                                    nfa = hammingGen.GenerateNFA(pattern, k);
+                                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
                                     break;
                                 default:
-                                    nfa = levenshteinGen.GenerateNFA(pattern, k);
+                                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                                     break;
                             }
                             ticksThisTime = timePerParse.ElapsedTicks;
