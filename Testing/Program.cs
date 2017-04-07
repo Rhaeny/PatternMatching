@@ -44,11 +44,11 @@ namespace Testing
             {
                 case "1":
                     HammingDistanceAutomataGenerator hammingGen = new HammingDistanceAutomataGenerator();
-                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
+                    nfa = hammingGen.GenerateSigmaVersionNFA(pattern, k);
                     break;
                 default:
                     LevenshteinDistanceAutomataGenerator levenshteinGen = new LevenshteinDistanceAutomataGenerator();
-                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
+                    nfa = levenshteinGen.GenerateSigmaVersionNFA(pattern, k);
                     break;
             }
 
@@ -188,10 +188,10 @@ namespace Testing
             switch (x)
             {
                 case "1":
-                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
+                    nfa = hammingGen.GenerateSigmaVersionNFA(pattern, k);
                     break;
                 default:
-                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
+                    nfa = levenshteinGen.GenerateSigmaVersionNFA(pattern, k);
                     break;
             }
             
@@ -217,10 +217,10 @@ namespace Testing
                             switch (x)
                             {
                                 case "1":
-                                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
+                                    nfa = hammingGen.GenerateSigmaVersionNFA(pattern, k);
                                     break;
                                 default:
-                                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
+                                    nfa = levenshteinGen.GenerateSigmaVersionNFA(pattern, k);
                                     break;
                             }
                             ticksThisTime = timePerParse.ElapsedTicks;
