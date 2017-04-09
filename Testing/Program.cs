@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using AutomataGeneratorLibrary;
 using AutomataLibrary;
+using DynamicProgramming;
 using GraphVizWrapper;
 using GraphVizWrapper.Commands;
 using GraphVizWrapper.Queries;
@@ -13,7 +14,97 @@ namespace Testing
     {
         private static void Main(string[] args)
         {
-            TestAccept();
+            TestAcceptDynamic();
+        }
+
+        public static void TestAcceptDynamic()
+        {
+            Console.WriteLine("Pattern:");
+            string pattern = Console.ReadLine();
+            Console.WriteLine("k:");
+            int k = Convert.ToInt32(Console.ReadLine());
+
+            HammingDistance hg = new HammingDistance();
+            LevenshteinDistance ld = new LevenshteinDistance();
+
+            DisplayTimerProperties();
+
+            long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
+            const long numIterations = 2;
+
+            string fileName = @"D:\large\latimes.txt";
+            string fileText = File.ReadAllText(fileName);
+
+            string[] operationNames =
+            {
+                "Operation: hg.AcceptInput(" + pattern + ", " + k + ", " + fileName + ")",
+                "Operation: ld.AcceptInputComplementVersion(" + pattern + ", " + k + ", " + fileName + ") for pattern "
+            };
+
+            for (int operation = 0; operation <= 1; operation++)
+            {
+                long numTicks = 0;
+                long maxTicks = 0;
+                long minTicks = long.MaxValue;
+                int indexFastest = -1;
+                int indexSlowest = -1;
+
+                Stopwatch time10KOperations = Stopwatch.StartNew();
+
+                for (int i = 0; i <= numIterations; i++)
+                {
+                    long ticksThisTime;
+                    Stopwatch timePerParse;
+
+                    switch (operation)
+                    {
+                        case 0:
+                            timePerParse = Stopwatch.StartNew();
+
+                            Console.WriteLine(hg.AcceptInput(pattern, k, fileText));
+
+                            ticksThisTime = timePerParse.ElapsedTicks;
+                            break;
+                        default:
+                            timePerParse = Stopwatch.StartNew();
+
+                            Console.WriteLine(ld.AcceptInputSigmaVersion(pattern, k, fileText));
+
+                            timePerParse.Stop();
+                            ticksThisTime = timePerParse.ElapsedTicks;
+                            break;
+                    }
+                    if (i == 0)
+                    {
+                        time10KOperations.Reset();
+                        time10KOperations.Start();
+                    }
+                    else
+                    {
+                        if (maxTicks < ticksThisTime)
+                        {
+                            indexSlowest = i;
+                            maxTicks = ticksThisTime;
+                        }
+                        if (minTicks > ticksThisTime)
+                        {
+                            indexFastest = i;
+                            minTicks = ticksThisTime;
+                        }
+                        numTicks += ticksThisTime;
+                    }
+                    Console.WriteLine(ticksThisTime * nanosecPerTick + "ns");
+                }
+                time10KOperations.Stop();
+                var milliSec = time10KOperations.ElapsedMilliseconds;
+
+                Console.WriteLine();
+                Console.WriteLine("{0} Summary:", operationNames[operation]);
+                Console.WriteLine("  Slowest time:  #{0}/{1} = {2} nanoseconds", indexSlowest, numIterations, maxTicks * nanosecPerTick);
+                Console.WriteLine("  Fastest time:  #{0}/{1} = {2} nanoseconds", indexFastest, numIterations, minTicks * nanosecPerTick);
+                Console.WriteLine("  Average time:  {0} ticks = {1} nanoseconds", numTicks / numIterations, (numTicks * nanosecPerTick) / numIterations);
+                Console.WriteLine("  Total time looping through {0} operations: {1} milliseconds", numIterations, milliSec);
+            }
         }
 
         public static void TestAccept()
@@ -188,10 +279,10 @@ namespace Testing
             switch (x)
             {
                 case "1":
-                    nfa = hammingGen.GenerateSigmaVersionNFA(pattern, k);
+                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
                     break;
                 default:
-                    nfa = levenshteinGen.GenerateSigmaVersionNFA(pattern, k);
+                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                     break;
             }
             
@@ -217,10 +308,10 @@ namespace Testing
                             switch (x)
                             {
                                 case "1":
-                                    nfa = hammingGen.GenerateSigmaVersionNFA(pattern, k);
+                                    nfa = hammingGen.GenerateComplementVersionNFA(pattern, k);
                                     break;
                                 default:
-                                    nfa = levenshteinGen.GenerateSigmaVersionNFA(pattern, k);
+                                    nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                                     break;
                             }
                             ticksThisTime = timePerParse.ElapsedTicks;

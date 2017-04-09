@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomataGeneratorLibrary", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCollections", "MyCollections\MyCollections.csproj", "{A924E67C-EB18-4EFA-BE77-60C628ED8F83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProgramming", "DynamicProgramming\DynamicProgramming.csproj", "{F4BD5230-6E07-4630-969A-0FF93E720A0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A924E67C-EB18-4EFA-BE77-60C628ED8F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A924E67C-EB18-4EFA-BE77-60C628ED8F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A924E67C-EB18-4EFA-BE77-60C628ED8F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4BD5230-6E07-4630-969A-0FF93E720A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4BD5230-6E07-4630-969A-0FF93E720A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4BD5230-6E07-4630-969A-0FF93E720A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4BD5230-6E07-4630-969A-0FF93E720A0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
