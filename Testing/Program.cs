@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using AutomataGeneratorLibrary;
 using AutomataLibrary;
-using DynamicProgramming;
+using BitParallelismLibrary;
 using GraphVizWrapper;
 using GraphVizWrapper.Commands;
 using GraphVizWrapper.Queries;
@@ -14,25 +14,25 @@ namespace Testing
     {
         private static void Main(string[] args)
         {
-            TestAcceptDynamic();
+            TestAccept();
         }
 
-        public static void TestAcceptDynamic()
+        public static void TestAcceptBit()
         {
             Console.WriteLine("Pattern:");
             string pattern = Console.ReadLine();
             Console.WriteLine("k:");
             int k = Convert.ToInt32(Console.ReadLine());
 
-            HammingDistance hg = new HammingDistance();
-            LevenshteinDistance ld = new LevenshteinDistance();
+            HammingDistanceNFASimulator hd = new HammingDistanceNFASimulator();
+            LevenshteinDistanceNFASimulator ld = new LevenshteinDistanceNFASimulator();
 
             DisplayTimerProperties();
 
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
-            const long numIterations = 2;
+            const long numIterations = 21;
 
-            string fileName = @"D:\large\latimes.txt";
+            string fileName = @"D:\cantrbry\alice29.txt";
             string fileText = File.ReadAllText(fileName);
 
             string[] operationNames =
@@ -61,14 +61,14 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(hg.AcceptInput(pattern, k, fileText));
+                            Console.WriteLine(hd.AcceptInput(pattern, k, fileText));
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(ld.AcceptInputSigmaVersion(pattern, k, fileText));
+                            Console.WriteLine(ld.AcceptInput("adbbca", 3, "adcabcaabadbbca"));
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;
@@ -93,7 +93,7 @@ namespace Testing
                         }
                         numTicks += ticksThisTime;
                     }
-                    Console.WriteLine(ticksThisTime * nanosecPerTick + "ns");
+                    //Console.WriteLine(ticksThisTime * nanosecPerTick + "ns");
                 }
                 time10KOperations.Stop();
                 var milliSec = time10KOperations.ElapsedMilliseconds;

@@ -166,7 +166,12 @@ namespace AutomataLibrary
                         SortedSet<int> states2;
                         if (TryGetStates2(epsilonClosureState, a, out states2))
                         {
-                            allStates2.UnionWith(states2);
+                            foreach (var state2 in states2)
+                            {
+                                SortedSet<int> epsilonClosureSet2 = new SortedSet<int>();
+                                GetEpsilonClosure(state2, epsilonClosureSet2);
+                                allStates2.UnionWith(epsilonClosureSet2);
+                            }
                         }
                     }
                     destStates.Add(a, allStates2);

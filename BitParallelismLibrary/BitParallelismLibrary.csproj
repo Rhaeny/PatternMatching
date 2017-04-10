@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B8512082-63E7-4F8E-AE23-16498C73E6D3}</ProjectGuid>
+    <ProjectGuid>{2311A866-7090-4CF5-863C-BBF9DE91FE4B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BitParallelismLibrary</RootNamespace>
@@ -40,7 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HammingDistanceBit.cs" />
+    <Compile Include="HammingDistanceNFASimulator.cs" />
+    <Compile Include="LevenshteinDistanceNFASimulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

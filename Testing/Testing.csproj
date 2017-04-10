@@ -67,9 +67,9 @@
       <Project>{DAD9FFAA-BD1C-4A2D-8DF1-0CCA03D8BB57}</Project>
       <Name>AutomataLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DynamicProgramming\DynamicProgramming.csproj">
-      <Project>{F4BD5230-6E07-4630-969A-0FF93E720A0D}</Project>
-      <Name>DynamicProgramming</Name>
+    <ProjectReference Include="..\BitParallelismLibrary\BitParallelismLibrary.csproj">
+      <Project>{2311A866-7090-4CF5-863C-BBF9DE91FE4B}</Project>
+      <Name>BitParallelismLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
