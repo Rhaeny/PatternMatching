@@ -14,7 +14,7 @@ namespace Testing
     {
         private static void Main(string[] args)
         {
-            TestAccept();
+            TestAcceptBit();
         }
 
         public static void TestAcceptBit()
@@ -30,10 +30,10 @@ namespace Testing
             DisplayTimerProperties();
 
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
-            const long numIterations = 21;
+            const long numIterations = 1;
 
-            string fileName = @"D:\cantrbry\alice29.txt";
-            string fileText = File.ReadAllText(fileName);
+            string fileName = @"D:\large\latimes.txt";
+            //string fileText = File.ReadAllText(fileName);
 
             string[] operationNames =
             {
@@ -61,14 +61,14 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(hd.AcceptInput(pattern, k, fileText));
+                            Console.WriteLine(hd.AcceptFile(pattern, k, fileName));
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(ld.AcceptInput("adbbca", 3, "adcabcaabadbbca"));
+                            Console.WriteLine(ld.AcceptFile(pattern, k, fileName));
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;
@@ -169,7 +169,7 @@ namespace Testing
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
 
-            string fileName = @"D:\cantrbry\alice29.txt";
+            string fileName = @"D:\large\latimes.txt";
 
             //string fileText = File.ReadAllText(fileName);
             //Console.WriteLine("Number of characters: " + fileText.Length);
@@ -177,7 +177,7 @@ namespace Testing
             DisplayTimerProperties();
 
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
-            const long numIterations = 2;
+            const long numIterations = 1;
 
             string[] operationNames =
             {
