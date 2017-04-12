@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BitParallelismLibrary
@@ -18,7 +19,7 @@ namespace BitParallelismLibrary
             foreach (var a in mAlphabet)
             {
                 ulong v = 0;
-                for (int j = pattern.Length - 1; j >= 0; j--)
+                for (int j = 0; j < pattern.Length; j++)
                 {
                     if (pattern[pattern.Length - j - 1] == a)
                     {
@@ -36,9 +37,15 @@ namespace BitParallelismLibrary
             {
                 r0 |= (ulong)1 << j;
             }
+            ulong[] rs = new ulong[k + 1];
+            rs[0] = r0;
+            for (int l = 1; l <= k; l++)
+            {
+                rs[l] = rs[l - 1] >> 1;
+            }
             for (int l = 0; l <= k; l++)
             {
-                r[l, 0] = r0;
+                r[l, 0] = rs[l];
             }
             for (int i = 0; i < input.Length; i++)
             {
@@ -61,6 +68,14 @@ namespace BitParallelismLibrary
                     }
                 }
             }
+            for (int l = 0; l <= k; l++)
+            {
+                for (int i = 0; i < input.Length + 1; i++)
+                {
+                    Console.Write(r[l, i] + " ");
+                }
+                Console.WriteLine();
+            }
             return matches;
         }
 
@@ -76,7 +91,7 @@ namespace BitParallelismLibrary
             foreach (var a in mAlphabet)
             {
                 ulong v = 0;
-                for (int j = pattern.Length - 1; j >= 0; j--)
+                for (int j = 0; j < pattern.Length; j++)
                 {
                     if (pattern[pattern.Length - j - 1] == a)
                     {
@@ -95,9 +110,10 @@ namespace BitParallelismLibrary
                 r0 |= (ulong)1 << j;
             }
             ulong[] rs = new ulong[k + 1];
-            for (int l = 0; l <= k; l++)
+            rs[0] = r0;
+            for (int l = 1; l <= k; l++)
             {
-                rs[l] = r0;
+                rs[l] = rs[l - 1] >> 1;
             }
             using (StreamReader reader = new StreamReader(filePath))
             {

@@ -32,7 +32,7 @@ namespace Testing
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
             const long numIterations = 1;
 
-            string fileName = @"D:\large\latimes.txt";
+            string fileName = @"D:\large\bible.txt";
             //string fileText = File.ReadAllText(fileName);
 
             string[] operationNames =

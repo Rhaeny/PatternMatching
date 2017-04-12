@@ -18,7 +18,7 @@ namespace BitParallelismLibrary
             foreach (var a in mAlphabet)
             {
                 ulong v = 0;
-                for (int j = pattern.Length - 1; j >= 0; j--)
+                for (int j = 0; j < pattern.Length; j++)
                 {
                     if (pattern[pattern.Length - j - 1] == a)
                     {
@@ -76,7 +76,7 @@ namespace BitParallelismLibrary
             foreach (var a in mAlphabet)
             {
                 ulong v = 0;
-                for (int j = pattern.Length - 1; j >= 0; j--)
+                for (int j = 0; j < pattern.Length; j++)
                 {
                     if (pattern[pattern.Length - j - 1] == a)
                     {
