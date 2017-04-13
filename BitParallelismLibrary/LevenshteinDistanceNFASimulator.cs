@@ -4,8 +4,19 @@ using System.IO;
 
 namespace BitParallelismLibrary
 {
+    /// <summary>
+    /// Levenshtein distance NFA simulator.
+    /// </summary>
     public class LevenshteinDistanceNFASimulator
     {
+        /// <summary>
+        /// Simulates run of sigma version NFA based on <see cref="pattern"/>, <see cref="k"/> and <see cref="input"/> 
+        /// parameters. Finds and returns count of matches in input string by using bit parallelism simulation method.
+        /// </summary>
+        /// <param name="pattern">The pattern of automaton.</param>
+        /// <param name="k">Maximum number of errors.</param>
+        /// <param name="input">Input text for automaton.</param>
+        /// <returns>Count of matches.</returns>
         public int AcceptInput(string pattern, int k, string input)
         {
             int matches = 0;
@@ -79,6 +90,14 @@ namespace BitParallelismLibrary
             return matches;
         }
 
+        /// <summary>
+        /// Simulates run of sigma version NFA based on <see cref="pattern"/>, <see cref="k"/> and <see cref="filePath"/> 
+        /// parameters. Finds and returns count of matches in file by using bit parallelism simulation method.
+        /// </summary>
+        /// <param name="pattern">The pattern of automaton.</param>
+        /// <param name="k">Maximum number of errors.</param>
+        /// <param name="filePath">Path of the file.</param>
+        /// <returns>Count of matches.</returns>
         public int AcceptFile(string pattern, int k, string filePath)
         {
             int matches = 0;

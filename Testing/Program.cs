@@ -32,7 +32,7 @@ namespace Testing
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
             const long numIterations = 1;
 
-            string fileName = @"D:\large\bible.txt";
+            string fileName = @"D:\large\enwiki-20170320-pages-articles.xml";
             //string fileText = File.ReadAllText(fileName);
 
             string[] operationNames =
@@ -61,14 +61,14 @@ namespace Testing
                         case 0:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(hd.AcceptFile(pattern, k, fileName));
+                            Console.Write(hd.AcceptFile(pattern, k, fileName) + " ");
 
                             ticksThisTime = timePerParse.ElapsedTicks;
                             break;
                         default:
                             timePerParse = Stopwatch.StartNew();
 
-                            Console.WriteLine(ld.AcceptFile(pattern, k, fileName));
+                            Console.Write(ld.AcceptFile(pattern, k, fileName) + " ");
 
                             timePerParse.Stop();
                             ticksThisTime = timePerParse.ElapsedTicks;
@@ -93,7 +93,7 @@ namespace Testing
                         }
                         numTicks += ticksThisTime;
                     }
-                    //Console.WriteLine(ticksThisTime * nanosecPerTick + "ns");
+                    Console.WriteLine(ticksThisTime * nanosecPerTick + "ns");
                 }
                 time10KOperations.Stop();
                 var milliSec = time10KOperations.ElapsedMilliseconds;
