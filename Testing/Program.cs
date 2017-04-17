@@ -285,7 +285,7 @@ namespace Testing
                     nfa = levenshteinGen.GenerateComplementVersionNFA(pattern, k);
                     break;
             }
-            
+
             for (int operation = 0; operation <= 1; operation++)
             {
                 long numTicks = 0;

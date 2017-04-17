@@ -37,12 +37,12 @@ namespace AutomataLibrary
         /// <param name="initialState">Initial state of automaton.</param>
         /// <param name="finalStates">Set of final states of automaton.</param>
         protected AbstractFiniteAutomaton(SortedSet<char> alphabet, SortedSet<int> states, int initialState, SortedSet<int> finalStates)
-		{
-			MAlphabet = alphabet;
-			MStates = states;
-			MInitialState = initialState;
-			MFinalStates = finalStates;
-		}
+        {
+            MAlphabet = alphabet;
+            MStates = states;
+            MInitialState = initialState;
+            MFinalStates = finalStates;
+        }
 
         /// <summary>
         /// Accepts input text and finds number of matches.

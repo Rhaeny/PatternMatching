@@ -11,8 +11,8 @@ namespace AutomataLibrary
     /// Nondeterministic finite automaton class.
     /// </summary>
     [Serializable]
-	public class NFA : AbstractFiniteAutomaton
-	{
+    public class NFA : AbstractFiniteAutomaton
+    {
         /// <summary>
         /// Sorted list of delta transitions.
         /// </summary>
@@ -33,54 +33,54 @@ namespace AutomataLibrary
         /// <param name="initialState">Initial state of automaton.</param>
         /// <param name="finalStates">Set of final states of automaton.</param>
 		public NFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, IEnumerable<Tuple<int, int>> epsilonItems,
-			int initialState, SortedSet<int> finalStates) : base (alphabet, states, initialState, finalStates)
-		{
+            int initialState, SortedSet<int> finalStates) : base(alphabet, states, initialState, finalStates)
+        {
             int transCount = 0;
             foreach (var item in deltaItems)
-			{
-				SortedList<char, SortedSet<int>> destStates;
-				if (MDelta.TryGetValue(item.Item1, out destStates))
-				{
-					foreach (var ch in item.Item2)
-					{
+            {
+                SortedList<char, SortedSet<int>> destStates;
+                if (MDelta.TryGetValue(item.Item1, out destStates))
+                {
+                    foreach (var ch in item.Item2)
+                    {
                         SortedSet<int> states2;
-						if (destStates.TryGetValue(ch, out states2))
-						{
-							states2.Add(item.Item3);
+                        if (destStates.TryGetValue(ch, out states2))
+                        {
+                            states2.Add(item.Item3);
                             transCount++;
                         }
-						else
-						{
-							states2 = new SortedSet<int> { item.Item3 };
-							destStates.Add(ch, states2);
+                        else
+                        {
+                            states2 = new SortedSet<int> { item.Item3 };
+                            destStates.Add(ch, states2);
                             transCount++;
                         }
-					}
-				}
-				else
-				{
-					destStates = new SortedList<char, SortedSet<int>>();
-					foreach (var ch in item.Item2)
-					{
-						destStates.Add(ch, new SortedSet<int> { item.Item3 });
+                    }
+                }
+                else
+                {
+                    destStates = new SortedList<char, SortedSet<int>>();
+                    foreach (var ch in item.Item2)
+                    {
+                        destStates.Add(ch, new SortedSet<int> { item.Item3 });
                         transCount++;
                     }
-					MDelta.Add(item.Item1, destStates);
-				}
-			}
-			foreach(var item in epsilonItems)
-			{
-				SortedSet<int> states2;
-				if (MEpsilonTrans.TryGetValue(item.Item1, out states2))
-				{
-					states2.Add(item.Item2);
-				}
-				else
-				{
-					states2 = new SortedSet<int>() { item.Item2};
-					MEpsilonTrans.Add(item.Item1, states2);
-				}
-			}
+                    MDelta.Add(item.Item1, destStates);
+                }
+            }
+            foreach (var item in epsilonItems)
+            {
+                SortedSet<int> states2;
+                if (MEpsilonTrans.TryGetValue(item.Item1, out states2))
+                {
+                    states2.Add(item.Item2);
+                }
+                else
+                {
+                    states2 = new SortedSet<int>() { item.Item2 };
+                    MEpsilonTrans.Add(item.Item1, states2);
+                }
+            }
             Console.WriteLine("Number of NFA states: " + MStates.Count);
             Console.WriteLine("Number of NFA transitions: " + transCount);
         }
@@ -151,15 +151,15 @@ namespace AutomataLibrary
         /// </summary>
         /// <returns>Sorted list of altered delta transitions.</returns>
         protected SortedList<int, SortedList<char, SortedSet<int>>> RemoveEpsilonTransitions()
-	    {
+        {
             SortedList<int, SortedList<char, SortedSet<int>>> newDelta = new SortedList<int, SortedList<char, SortedSet<int>>>();
             foreach (var state in MStates)
-	        {
+            {
                 SortedList<char, SortedSet<int>> destStates = new SortedList<char, SortedSet<int>>();
                 SortedSet<int> epsilonClosureSet = new SortedSet<int>();
                 GetEpsilonClosure(state, epsilonClosureSet);
-	            foreach (var a in MAlphabet)
-	            {
+                foreach (var a in MAlphabet)
+                {
                     SortedSet<int> allStates2 = new SortedSet<int>();
                     foreach (var epsilonClosureState in epsilonClosureSet)
                     {
@@ -178,8 +178,8 @@ namespace AutomataLibrary
                 }
                 newDelta.Add(state, destStates);
             }
-	        return newDelta;
-	    }
+            return newDelta;
+        }
 
         /// <summary>
         /// Gets all states, that can be moved over by symbol <see cref="a"/> from <see cref="currentState"/>.
@@ -190,7 +190,7 @@ namespace AutomataLibrary
         /// if the current state is found; otherwise, the default value for the type of <see cref="states2"/> parameter. This parameter is passed uninitialized.</param>
         /// <returns>True, if at least one state is found; False, otherwise.</returns>
         protected bool TryGetStates2(int currentState, char a, out SortedSet<int> states2)
-	    {
+        {
             SortedList<char, SortedSet<int>> destStates;
             if (MDelta.TryGetValue(currentState, out destStates))
             {
@@ -200,8 +200,8 @@ namespace AutomataLibrary
                 }
             }
             states2 = null;
-	        return false;
-	    }
+            return false;
+        }
 
         /// <summary>
         /// Recursively finds epsilon closure of <see cref="currentState"/>.
@@ -209,16 +209,16 @@ namespace AutomataLibrary
         /// <param name="currentState"> Current state whose states to get.</param>
         /// <param name="epsilonClosureSet">Set of states, that can be moved over from original state by epsilon transitions. Serves also as return value.</param>
         protected void GetEpsilonClosure(int currentState, SortedSet<int> epsilonClosureSet)
-	    {
+        {
             epsilonClosureSet.Add(currentState);
             foreach (var epsTrans in MEpsilonTrans.Where(epsTrans => epsTrans.Key == currentState))
-	        {
+            {
                 foreach (var state2 in epsTrans.Value)
-	            {
-	                GetEpsilonClosure(state2, epsilonClosureSet);
-	            }
-	        }
-	    }
+                {
+                    GetEpsilonClosure(state2, epsilonClosureSet);
+                }
+            }
+        }
 
         /// <summary>
         /// Accepts input text and finds count of matches by using basic method of simulation of run of <see cref="NFA"/>.
@@ -229,7 +229,7 @@ namespace AutomataLibrary
         {
             int matches = 0;
             SortedList<int, SortedList<char, SortedSet<int>>> noEpsDelta = RemoveEpsilonTransitions();
-            SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState};
+            SortedSet<int> notProcessedStateSet = new SortedSet<int> { MInitialState };
             for (int i = 0; i < input.Length && notProcessedStateSet.Count > 0; i++)
             {
                 bool isFound = false;
@@ -314,7 +314,7 @@ namespace AutomataLibrary
         /// </summary>
         /// <param name="sortedSet">Sorted set to print.</param>
         protected void PrintSortedSet(SortedSet<int> sortedSet)
-	    {
+        {
             Console.Write("\n{ ");
             foreach (var closureState in sortedSet)
             {
@@ -328,17 +328,17 @@ namespace AutomataLibrary
         /// </summary>
         /// <returns>Dot string of <see cref="NFA"/>.</returns>
 	    public override string GetGraphvizString()
-	    {
-	        StringBuilder output = new StringBuilder();
-	        List<Tuple<int, SortedSet<char>, int>> outputDelta = (
+        {
+            StringBuilder output = new StringBuilder();
+            List<Tuple<int, SortedSet<char>, int>> outputDelta = (
                 from state1 in MStates
                 from state2 in MStates
                 select new Tuple<int, SortedSet<char>, int>(state1, new SortedSet<char>(), state2)).ToList();
-	        output.Append("digraph{Start [shape=plaintext];Start -> " + MInitialState + ";");
-	        foreach (var finalState in MFinalStates)
-	        {
-	            output.Append(finalState + "[shape=doublecircle];");
-	        }
+            output.Append("digraph{Start [shape=plaintext];Start -> " + MInitialState + ";");
+            foreach (var finalState in MFinalStates)
+            {
+                output.Append(finalState + "[shape=doublecircle];");
+            }
             foreach (var delta in MDelta)
             {
                 foreach (var destStates in delta.Value)
@@ -387,6 +387,6 @@ namespace AutomataLibrary
                 }
             }
             return output.Append("}").ToString();
-	    }
-	}
+        }
+    }
 }

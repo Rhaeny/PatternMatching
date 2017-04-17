@@ -11,7 +11,7 @@ namespace AutomataLibrary
     /// </summary>
     [Serializable]
     public class DFA : AbstractFiniteAutomaton
-	{
+    {
         /// <summary>
         /// Sorted list of delta transitions.
         /// </summary>
@@ -27,31 +27,31 @@ namespace AutomataLibrary
         /// <param name="finalStates">Set of final states of automaton.</param>
 		public DFA(SortedSet<char> alphabet, SortedSet<int> states, IEnumerable<Tuple<int, string, int>> deltaItems, int initialState, SortedSet<int> finalStates)
 
-			: base(alphabet, states, initialState, finalStates)
-		{
-		    int transCount = 0;
-			foreach(var item in deltaItems)
-			{
-				SortedList<char, int> destStates;
-				if (MDelta.TryGetValue(item.Item1, out destStates))
-				{
-					foreach (var ch in item.Item2)
-					{
-						destStates.Add(ch, item.Item3);
+            : base(alphabet, states, initialState, finalStates)
+        {
+            int transCount = 0;
+            foreach (var item in deltaItems)
+            {
+                SortedList<char, int> destStates;
+                if (MDelta.TryGetValue(item.Item1, out destStates))
+                {
+                    foreach (var ch in item.Item2)
+                    {
+                        destStates.Add(ch, item.Item3);
                         transCount++;
                     }
-				}
-				else
-				{
-					destStates = new SortedList<char, int>();
-					foreach(var ch in item.Item2)
-					{
-						destStates.Add(ch, item.Item3);
-					    transCount++;
-					}
-					MDelta.Add(item.Item1, destStates);
-				}
-			}
+                }
+                else
+                {
+                    destStates = new SortedList<char, int>();
+                    foreach (var ch in item.Item2)
+                    {
+                        destStates.Add(ch, item.Item3);
+                        transCount++;
+                    }
+                    MDelta.Add(item.Item1, destStates);
+                }
+            }
             Console.WriteLine("Number of DFA states: " + MStates.Count);
             Console.WriteLine("Number of DFA transitions: " + transCount);
         }
