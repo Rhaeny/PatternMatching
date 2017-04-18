@@ -17,6 +17,9 @@ namespace Testing
             TestAcceptBit();
         }
 
+        /// <summary>
+        /// Tests bit parallelism library.
+        /// </summary>
         public static void TestAcceptBit()
         {
             Console.WriteLine("Pattern:");
@@ -107,6 +110,9 @@ namespace Testing
             }
         }
 
+        /// <summary>
+        /// Tests finite automata library.
+        /// </summary>
         public static void TestAccept()
         {
             NFA nfa;
@@ -251,6 +257,9 @@ namespace Testing
             }
         }
 
+        /// <summary>
+        /// Tests automata generator library.
+        /// </summary>
         public static void TestTransform()
         {
             HammingDistanceAutomataGenerator hammingGen = new HammingDistanceAutomataGenerator();
@@ -357,6 +366,9 @@ namespace Testing
             }
         }
 
+        /// <summary>
+        /// Displays timer properties.
+        /// </summary>
         public static void DisplayTimerProperties()
         {
             Console.WriteLine(Stopwatch.IsHighResolution
