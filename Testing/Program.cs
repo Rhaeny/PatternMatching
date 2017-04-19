@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using AutomataGeneratorLibrary;
 using AutomataLibrary;
 using BitParallelismLibrary;
@@ -26,6 +25,8 @@ namespace Testing
             string pattern = Console.ReadLine();
             Console.WriteLine("k:");
             int k = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Path of the file:");
+            string fileName = Console.ReadLine();
 
             HammingDistanceNFASimulator hd = new HammingDistanceNFASimulator();
             LevenshteinDistanceNFASimulator ld = new LevenshteinDistanceNFASimulator();
@@ -34,8 +35,7 @@ namespace Testing
 
             long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
             const long numIterations = 1;
-
-            string fileName = @"D:\large\enwiki-20170320-pages-articles.xml";
+            
             //string fileText = File.ReadAllText(fileName);
 
             string[] operationNames =
@@ -131,6 +131,8 @@ namespace Testing
             string pattern = Console.ReadLine();
             Console.WriteLine("k:");
             int k = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Path of the file:");
+            string fileName = Console.ReadLine();
 
             Console.WriteLine("1 - Hamming Distance\n2 - Levenshtein Distance");
             var x = Console.ReadLine();
@@ -174,8 +176,6 @@ namespace Testing
             ts = stopWatch.Elapsed;
             elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
             Console.WriteLine("PNG image of DFA generated. Runtime: " + elapsedTime);*/
-
-            string fileName = @"D:\large\latimes.txt";
 
             //string fileText = File.ReadAllText(fileName);
             //Console.WriteLine("Number of characters: " + fileText.Length);
